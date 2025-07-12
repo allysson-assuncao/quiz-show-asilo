@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,6 +27,10 @@ public class Question {
 
     @ManyToMany(mappedBy = "questions", fetch = FetchType.LAZY)
     @JsonIgnore
-    private Set<Quiz> workstations;
+    private Set<Quiz> quizzes = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "answer_id")
+    private Answer answer;
 
 }

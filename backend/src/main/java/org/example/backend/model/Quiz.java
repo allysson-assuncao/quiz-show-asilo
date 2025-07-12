@@ -26,10 +26,6 @@ public class Quiz {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "quiz", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIgnore
-    private Set<Result> result;
-
     @ManyToMany
     @JoinTable(
         name = "quiz_question",
@@ -37,5 +33,9 @@ public class Quiz {
         inverseJoinColumns = @JoinColumn(name = "question_id")
     )
     private Set<Question> questions;
+
+    @OneToMany(mappedBy = "quiz", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<Result> result;
 
 }
