@@ -23,7 +23,7 @@ public class TokenService {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.create()
-                    .withIssuer("quiz-show-asilo")
+                    .withIssuer("quiz_show_asilo")
                     .withSubject(userModel.getEmail())
                     .withExpiresAt(LocalDateTime.now().plusDays(EXPIRATION_TIME_IN_DAYS).toInstant(ZoneOffset.of("-03:00")))
                     .sign(algorithm);
@@ -36,7 +36,7 @@ public class TokenService {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.require(algorithm)
-                    .withIssuer("quiz-show-asilo")
+                    .withIssuer("quiz_show_asilo")
                     .build()
                     .verify(token)
                     .getSubject();
