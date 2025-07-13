@@ -12,15 +12,11 @@ import {ProtectedRouteProps} from "@/model/Props";
 export function getInheritedRoles(role: UserRole): UserRole[] {
     switch (role) {
         case 'ADMIN':
-            return ['ADMIN', 'CASHIER', 'WAITER', 'COOK', 'BARMAN']
-        case 'CASHIER':
-            return ['CASHIER', 'WAITER', 'COOK', 'BARMAN']
-        case 'WAITER':
-            return ['WAITER']
-        case 'COOK':
-            return ['COOK']
-        case 'BARMAN':
-            return ['BARMAN']
+            return ['ADMIN', 'CARETAKER', 'RESIDENT']
+        case 'CARETAKER':
+            return ['CARETAKER', 'RESIDENT']
+        case 'RESIDENT':
+            return ['RESIDENT']
         default:
             return []
     }

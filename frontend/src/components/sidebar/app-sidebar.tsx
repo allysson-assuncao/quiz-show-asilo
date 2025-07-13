@@ -5,7 +5,7 @@ import {
     Command, FingerprintIcon, FolderKanbanIcon,
     GlobeIcon,
     LifeBuoy,
-    Send, Settings2Icon, ShieldPlusIcon,
+    Send,
     SquareTerminal,
 } from "lucide-react"
 
@@ -25,9 +25,9 @@ import {NavUser} from "@/components/sidebar/nav/nav-user";
 
 const data = {
     user: {
-        name: "Hub Restaurantes",
-        email: "hub.restaurantes@gmail.com",
-        avatar: "/avatars/rest_hub.jpg",
+        name: "Quiz Show Asilo",
+        email: "quiz.showasilo@gmail.com",
+        avatar: "/avatars/quiz_asilo.jpg",
     },
     navMain: [
         {
@@ -37,20 +37,12 @@ const data = {
             isActive: true,
             items: [
                 {
-                    title: "Produtos",
-                    url: '/dashboard/manage/product',
+                    title: "Perguntas",
+                    url: '/dashboard/manage/questions',
                 },
                 {
-                    title: "Categorias",
-                    url: '/dashboard/manage/category',
-                },
-                {
-                    title: "Destinos",
-                    url: '/dashboard/manage/workstation',
-                },
-                {
-                    title: "Mesas",
-                    url: '/dashboard/manage/table',
+                    title: "Quizes",
+                    url: '/dashboard/manage/quiz',
                 },
             ],
         },
@@ -61,16 +53,8 @@ const data = {
             isActive: true,
             items: [
                 {
-                    title: "Seleção de Mesas",
-                    url: '/dashboard/table/grid',
-                },
-                {
-                    title: "Cardápio",
-                    url: '/dashboard/menu',
-                },
-                {
-                    title: "Pedidos por Área",
-                    url: '/dashboard/table/orders-by-workstation',
+                    title: "Responder Quiz",
+                    url: '/dashboard/answer/quiz',
                 },
             ],
         },
@@ -86,44 +70,12 @@ const data = {
                 {
                     title: 'Cadastro',
                     url: '/register',
-                },
-                {
-                    title: 'Esqueceu a senha',
-                    url: '/forgot-password',
-                },
+                }
             ],
         },
-        {
-            title: 'Configurações',
-            /*url: "#",*/
-            icon: Settings2Icon,
-            isActive: true,
-            items: [
-                {
-                    title: 'Perfil',
-                    url: '/dashboard/settings/profile',
-                },
-                {
-                    title: 'Conta',
-                    url: '/dashboard/settings/account',
-                },
-                {
-                    title: 'Aparência',
-                    url: '/dashboard/settings/appearance',
-                },
-                {
-                    title: 'Notificações',
-                    url: '/dashboard/settings/notifications',
-                },
-                {
-                    title: 'Display',
-                    url: '/dashboard/settings/display',
-                },
-            ],
-        },
-        {
+        /*{
             title: 'Administrador',
-            /*url: "#",*/
+            /!*url: "#",*!/
             icon: ShieldPlusIcon,
             isActive: false,
             items: [
@@ -140,7 +92,7 @@ const data = {
                     url: '/dashboard/table/workers',
                 },
             ],
-        },
+        },*/
     ],
     projects: [
         {
@@ -148,18 +100,8 @@ const data = {
             /*url: "#",*/
             icon: GlobeIcon,
             itemNames: ['GitHub'],
-            itemUrls: ['https://github.com/allysson-assuncao/esof1-project'],
+            itemUrls: ['https://github.com/allysson-assuncao/quiz-show-asilo'],
         },
-        /*{
-            name: "Sales & Marketing",
-            url: "#",
-            icon: PieChart,
-        },
-        {
-            name: "Travel",
-            url: "#",
-            icon: Map,
-        },*/
     ],
     navSecondary: [
         {
@@ -188,8 +130,8 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
                                     <Command className="size-4"/>
                                 </div>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
-                                    <span className="truncate font-medium">Hub Restaurantes</span>
-                                    <span className="truncate text-xs">Empresa</span>
+                                    <span className="truncate font-medium">Quiz Show Asilo</span>
+                                    <span className="truncate text-xs">Extensão</span>
                                 </div>
                             </a>
                         </SidebarMenuButton>

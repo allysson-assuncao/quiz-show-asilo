@@ -38,7 +38,7 @@ export function NavMain({
     }[]
 }) {
     const role = useSelector((state: RootState) => state.auth.role)
-    const allowedManageRoles = [UserRoles.ADMIN.value, UserRoles.CASHIER.value];
+    const allowedManageRoles = [UserRoles.ADMIN.value];
 
     const hasManagePermission = () => {
         if (!role) return false;
