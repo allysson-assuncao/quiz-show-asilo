@@ -62,6 +62,7 @@ const data = {
             title: 'Autenticação',
             /*url: "#",*/
             icon: FingerprintIcon,
+            isActive: true,
             items: [
                 {
                     title: 'Login',

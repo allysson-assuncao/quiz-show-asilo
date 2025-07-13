@@ -65,4 +65,3 @@ const ProtectedRoute = ({children, roles}: ProtectedRouteProps) => {
 }
 
 export default ProtectedRoute
-
