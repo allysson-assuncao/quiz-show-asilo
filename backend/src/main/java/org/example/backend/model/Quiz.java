@@ -29,7 +29,7 @@ public class Quiz {
     @ManyToMany
     @JoinTable(
         name = "quiz_question",
-        joinColumns = @JoinColumn(name = "workstation_id"),
+        joinColumns = @JoinColumn(name = "quiz_id"),
         inverseJoinColumns = @JoinColumn(name = "question_id")
     )
     private Set<Question> questions;

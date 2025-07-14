@@ -21,9 +21,10 @@ public class Answer {
     @Column(name = "id", nullable = false, updatable = false, unique = true)
     private long id;
 
-    @OneToMany(mappedBy = "answer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "question_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
-    private Set<Question> questions = new HashSet<>();
+    private Question questions;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "result_id")

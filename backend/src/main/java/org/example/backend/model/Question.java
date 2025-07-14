@@ -29,8 +29,12 @@ public class Question {
     @JsonIgnore
     private Set<Quiz> quizzes = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "answer_id")
-    private Answer answer;
+    @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<Choice> choices = new HashSet<>();
+
+    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<Answer> answer =  new HashSet<>();
 
 }

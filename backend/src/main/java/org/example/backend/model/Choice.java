@@ -20,6 +20,16 @@ public class Choice {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(name = "text", nullable = false, unique = true, updatable = false)
+    private String text;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "question_id")
+    private Question question;
+
+    @Column(name = "is_correct", nullable = false)
+    private boolean isCorrect;
+
     @ManyToMany(mappedBy = "choices", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Answer> answers;
