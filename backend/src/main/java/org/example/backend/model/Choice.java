@@ -27,7 +27,7 @@ public class Choice {
     @JoinColumn(name = "question_id")
     private Question question;
 
-    @Column(name = "is_correct", nullable = false)
+    @Column(name = "is_correct", nullable = false, columnDefinition = "DEFAULT false")
     private boolean isCorrect;
 
     @ManyToMany(mappedBy = "choices", fetch = FetchType.LAZY)
