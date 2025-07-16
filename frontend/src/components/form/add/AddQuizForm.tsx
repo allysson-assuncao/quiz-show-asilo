@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {Textarea} from "@/components/ui/textarea";
 
 const QUESTIONS = [
   { id: 1, text: "Qual a capital da França?" },
@@ -51,8 +52,8 @@ export function AddQuizForm() {
                   <FormItem>
                     <FormLabel>Descrição</FormLabel>
                     <FormControl>
-                      <textarea
-                        className="w-full border rounded-md p-2 min-h-[120px] resize-y text-black"
+                      <Textarea
+                        className="w-full border rounded-md p-2 min-h-[120px] resize-y"
                         placeholder="Digite a descrição do quiz"
                         rows={5}
                         {...field}
