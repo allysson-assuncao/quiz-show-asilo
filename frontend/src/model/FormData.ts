@@ -10,3 +10,4 @@ export interface RegisterFormData {
     name: string;
     role: string;
 }
+
