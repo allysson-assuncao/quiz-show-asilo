@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 public class QuizService {
 
     private final QuizRepository quizRepository;
+    private final QuestionRepository questionRepository;
 
     public QuizService(QuizRepository quizRepository) {
         this.quizRepository = quizRepository;
