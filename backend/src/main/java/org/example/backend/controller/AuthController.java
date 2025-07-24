@@ -25,7 +25,6 @@ public class AuthController {
         this.authService = authService;
     }
 
-    // Method specific url, for a specific method
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid UserLoginDTO loginRequestDTO) {
         Optional<AuthResponseDTO> optionalAuthResponseDTO = this.authService.login(loginRequestDTO);

@@ -15,7 +15,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString(exclude = {"quizzes", "choices", "answers"})
 public class Question {
     @Id
     @Column(name = "id", nullable = false, unique = true, updatable = false)
@@ -33,8 +33,8 @@ public class Question {
     @JsonIgnore
     private Set<Choice> choices = new HashSet<>();
 
-    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
-    private Set<Answer> answer =  new HashSet<>();
+    private Set<Answer> answers = new HashSet<>();
 
 }
