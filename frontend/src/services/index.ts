@@ -12,26 +12,6 @@ export const user = axios.create({
     baseURL: `http://localhost:${port}/app/user`,
 });
 
-export const localTable = axios.create({
-    baseURL: `http://localhost:${port}/app/local-table`,
-});
-
-export const guestTab = axios.create({
-    baseURL: `http://localhost:${port}/app/guest-tab`,
-});
-
-export const order = axios.create({
-    baseURL: `http://localhost:${port}/app/order`,
-});
-
-export const category = axios.create({
-    baseURL: `http://localhost:${port}/app/category`,
-});
-
-export const workstation = axios.create({
-    baseURL: `http://localhost:${port}/app/workstation`,
-});
-
-export const product = axios.create({
-    baseURL: `http://localhost:${port}/app/product`,
+export const question = axios.create({
+    baseURL: `http://localhost:${port}/app/question`,
 });
