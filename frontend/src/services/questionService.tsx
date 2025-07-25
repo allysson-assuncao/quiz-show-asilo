@@ -2,7 +2,7 @@ import {QuestionRequest} from "@/model/Interfaces";
 import {question} from "@/services/index";
 
 export const createQuestionRequest = async (data: QuestionRequest) => {
-  const response = await question.post('/api/questions', data, {
+  const response = await question.post('/register', data, {
         headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
