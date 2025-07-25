@@ -11,3 +11,18 @@ export interface RegisterFormData {
     role: string;
 }
 
+export interface QuizFormData {
+  title: string;
+  description?: string;
+  questionIds: string[];
+}
+
+export interface ChoiceFormData {
+  text: string;
+  isCorrect: boolean;
+}
+
+export interface QuestionFormData {
+  text:string;
+  choices: ChoiceFormData[];
+}

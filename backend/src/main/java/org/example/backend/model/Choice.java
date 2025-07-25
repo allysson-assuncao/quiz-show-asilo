@@ -13,22 +13,22 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString(exclude = {"question", "answers"})
 public class Choice {
     @Id
-    @Column(name = "id", nullable = false, unique = true, updatable = false, columnDefinition = "VARCHAR(36)")
+    @Column(name = "id", nullable = false, unique = true, updatable = false)
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "text", nullable = false, unique = true, updatable = false)
+    @Column(name = "text", nullable = false)
     private String text;
+
+    @Column(name = "is_correct", nullable = false, columnDefinition = "DEFAULT false")
+    private boolean isCorrect;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
     private Question question;
-
-    @Column(name = "is_correct", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private boolean isCorrect;
 
     @ManyToMany(mappedBy = "choices", fetch = FetchType.LAZY)
     @JsonIgnore

@@ -1,9 +1,8 @@
 'use client'
 
-
 import {ManageQuiz} from "@/components/quiz/ManageQuiz";
 
-const HomePage = () => {
+const QuizPage = () => {
     return (
         <div className="h-full">
             <ManageQuiz/>
@@ -11,4 +10,4 @@ const HomePage = () => {
     )
 }
 
-export default HomePage
+export default QuizPage

@@ -14,7 +14,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString(exclude = {"question", "result", "choices"})
 public class Answer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +24,7 @@ public class Answer {
     @JoinColumn(name = "question_id")
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
-    private Question questions;
+    private Question question;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "result_id")
@@ -32,9 +32,9 @@ public class Answer {
 
     @ManyToMany
     @JoinTable(
-        name = "answer_choices",
-        joinColumns = @JoinColumn(name = "answer_id"),
-        inverseJoinColumns = @JoinColumn(name = "choice_id")
+            name = "answer_choices",
+            joinColumns = @JoinColumn(name = "answer_id"),
+            inverseJoinColumns = @JoinColumn(name = "choice_id")
     )
     private List<Choice> choices;
 

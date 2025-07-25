@@ -5,3 +5,8 @@ export const UserRoles = {
     CARETAKER: {value: 'CARETAKER', label: 'Cuidador'},
     RESIDENT: {value: 'RESIDENT', label: 'Residente'},
 } as const
+
+export interface SimpleQuestion {
+  id: string;
+  text: string;
+}

@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString(exclude = {"quiz", "answers"})
 public class Result {
     @Id
     @Column(name = "id", nullable = false, unique = true, updatable = false)

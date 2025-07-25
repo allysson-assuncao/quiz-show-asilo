@@ -1,112 +1,169 @@
 import React from "react";
-import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {useForm} from "react-hook-form";
+import {Input} from "@/components/ui/input";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
+import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Textarea} from "@/components/ui/textarea";
-
-const QUESTIONS = [
-  { id: 1, text: "Qual a capital da França?" },
-  { id: 2, text: "Quem escreveu Dom Quixote?" },
-  { id: 3, text: "Qual o maior planeta do sistema solar?" },
-];
+import {useMutation, useQuery, useQueryClient} from "react-query";
+import {fetchAllSimpleQuestions} from "@/services/questionService";
+import {QuizFormData, quizFormSchema} from "@/utils/operations/quizValidation";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {createQuizRequest} from "@/services/quizService";
+import {toast} from "sonner";
+import {AxiosError} from "axios";
+import {Button} from "@/components/ui/button";
+import {Check, ChevronsUpDown} from "lucide-react";
+import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
+import {cn} from "@/lib/utils";
+import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList} from "@/components/ui/command";
+import {Badge} from "@/components/ui/badge";
+import {Icons} from "@/public/icons";
 
 export function AddQuizForm() {
-  const form = useForm({
-    defaultValues: {
-      title: "",
-      description: "",
-      questions: [],
-    },
-  });
+    const queryClient = useQueryClient();
 
-  return (
-    <div className="flex flex-col items-center mt-10 space-y-8 md:space-y-6">
-      <Card className="w-full md:max-w-[467px] lg:max-w-[600px] mx-auto">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl">Novo Quiz</CardTitle>
-          <CardDescription>
-            Escolha as perguntas que irão compor seu quiz
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4">
-          <Form {...form}>
-            <form className="space-y-4">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Título</FormLabel>
-                    <FormControl>
-                      <Input type="text" placeholder="Digite o título do quiz" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Descrição</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        className="w-full border rounded-md p-2 min-h-[120px] resize-y"
-                        placeholder="Digite a descrição do quiz"
-                        rows={5}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="questions"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Perguntas</FormLabel>
-                    <div className="overflow-x-auto rounded-md border mt-2">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Selecionar</th>
-                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pergunta</th>
-                          </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                          {QUESTIONS.map((q) => (
-                            <tr key={q.id}>
-                              <td className="px-4 py-2">
-                                <input
-                                  type="checkbox"
-                                  checked={field.value.includes(q.id)}
-                                  onChange={e => {
-                                    if (e.target.checked) {
-                                      field.onChange([...field.value, q.id]);
-                                    } else {
-                                      field.onChange(field.value.filter((id: number) => id !== q.id));
-                                    }
-                                  }}
-                                />
-                              </td>
-                              <td className="px-4 py-2 text-black">{q.text}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-    </div>
-  );
+    const {data: questions = [], isLoading: isLoadingQuestions} = useQuery({
+        queryKey: ['simpleQuestions'],
+        queryFn: fetchAllSimpleQuestions,
+    });
+
+    const form = useForm<QuizFormData>({
+        resolver: zodResolver(quizFormSchema),
+        defaultValues: {
+            title: "",
+            description: "",
+            questionIds: [],
+        },
+        mode: 'onBlur',
+    });
+
+    const mutation = useMutation({
+        mutationFn: createQuizRequest,
+        onSuccess: () => {
+            toast.success("Quiz criado com sucesso!");
+            queryClient.invalidateQueries({queryKey: ['quizzes']});
+        },
+        onError: (error) => {
+            const errorMessage = error instanceof AxiosError
+                ? error.response?.data?.message
+                : "Ocorreu um erro inesperado.";
+            toast.error("Erro ao criar quiz", {description: errorMessage});
+        },
+    });
+
+    const onSubmit = (data: QuizFormData) => {
+        mutation.mutate(data);
+    };
+
+    const selectedQuestionTexts = form.watch('questionIds').map(id =>
+        questions.find(q => q.id === id)?.text
+    ).filter(Boolean);
+
+    return (
+        <Card className="border-0 shadow-none">
+            <CardHeader>
+                <CardTitle className="text-2xl">Novo Quiz</CardTitle>
+                <CardDescription>Preencha os dados e selecione as perguntas.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                        <FormField
+                            control={form.control}
+                            name="title"
+                            render={({field}) => (
+                                <FormItem>
+                                    <FormLabel>Título</FormLabel>
+                                    <FormControl><Input
+                                        placeholder="Ex: Conhecimentos Gerais" {...field} /></FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="description"
+                            render={({field}) => (
+                                <FormItem>
+                                    <FormLabel>Descrição</FormLabel>
+                                    <FormControl><Textarea
+                                        placeholder="Uma breve descrição sobre o quiz (opcional)" {...field} /></FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="questionIds"
+                            render={({field}) => (
+                                <FormItem className="flex flex-col">
+                                    <FormLabel>Perguntas</FormLabel>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <FormControl>
+                                                <Button
+                                                    variant="outline"
+                                                    role="combobox"
+                                                    className={cn("w-full justify-between", !field.value.length && "text-muted-foreground")}
+                                                >
+                                                    {field.value.length > 0
+                                                        ? `${field.value.length} pergunta(s) selecionada(s)`
+                                                        : "Selecione as perguntas"}
+                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
+                                                </Button>
+                                            </FormControl>
+                                        </PopoverTrigger>
+                                        <PopoverContent
+                                            className="w-[--radix-popover-trigger-width] max-h-[--radix-popover-content-available-height] p-0">
+                                            <Command>
+                                                <CommandInput placeholder="Buscar pergunta..."/>
+                                                <CommandList>
+                                                    <CommandEmpty>Nenhuma pergunta encontrada.</CommandEmpty>
+                                                    <CommandGroup>
+                                                        {questions.map((question) => (
+                                                            <CommandItem
+                                                                key={question.id}
+                                                                value={question.text}
+                                                                onSelect={() => {
+                                                                    const newValue = field.value.includes(question.id)
+                                                                        ? field.value.filter((id) => id !== question.id)
+                                                                        : [...field.value, question.id];
+                                                                    field.onChange(newValue);
+                                                                }}
+                                                            >
+                                                                <Check
+                                                                    className={cn("mr-2 h-4 w-4", field.value.includes(question.id) ? "opacity-100" : "opacity-0")}
+                                                                />
+                                                                {question.text}
+                                                            </CommandItem>
+                                                        ))}
+                                                    </CommandGroup>
+                                                </CommandList>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
+                                    <FormDescription>
+                                        {isLoadingQuestions ? "Carregando perguntas..." : "Clique para ver e selecionar as perguntas disponíveis."}
+                                    </FormDescription>
+                                    <div className="flex flex-wrap gap-1 pt-2">
+                                        {selectedQuestionTexts.map(text =>
+                                            <Badge key={text}
+                                                   variant="secondary">{text}
+                                            </Badge>)}
+                                    </div>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        />
+
+                        <div className="flex justify-end pt-4">
+                            <Button type="submit" disabled={mutation.isLoading}>
+                                {mutation.isLoading ? <Icons.spinner className="animate-spin"/> : 'Salvar Quiz'}
+                            </Button>
+                        </div>
+                    </form>
+                </Form>
+            </CardContent>
+        </Card>
+    );
 }
