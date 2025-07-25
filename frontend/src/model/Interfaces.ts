@@ -6,12 +6,7 @@ export const UserRoles = {
     RESIDENT: {value: 'RESIDENT', label: 'Residente'},
 } as const
 
-export interface ChoiceRequest {
+export interface SimpleQuestion {
+  id: string;
   text: string;
-  isCorrect: boolean;
-}
-
-export interface QuestionRequest {
-  text:string;
-  choices: ChoiceRequest[];
 }

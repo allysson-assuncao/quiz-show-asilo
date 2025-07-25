@@ -23,7 +23,7 @@ public class QuizController {
         this.quizService = quizService;
     }
 
-    @PostMapping
+    @PostMapping("register")
     public ResponseEntity<Quiz> createQuiz(@Valid @RequestBody QuizRequestDTO quizRequestDTO) {
         Quiz createdQuiz = quizService.createQuiz(quizRequestDTO);
 
