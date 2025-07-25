@@ -1,11 +1,11 @@
 'use client'
 
-import {ManageQuestionForm} from "@/components/form/manage/ManageQuestionForm";
+import {ManageQuestion} from "@/components/form/manage/ManageQuestion";
 
 const QuestionPage = () => {
     return (
         <div className="h-full">
-            <ManageQuestionForm/>
+            <ManageQuestion/>
         </div>
     )
 }

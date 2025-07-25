@@ -14,7 +14,7 @@ import {Switch} from "@/components/ui/switch";
 import {Button} from "@/components/ui/button";
 import {Icons} from "@/public/icons";
 
-export function ManageQuestionForm() {
+export function AddQuestionForm() {
     const queryClient = useQueryClient();
 
     const form = useForm<QuestionFormData>({
@@ -53,7 +53,7 @@ export function ManageQuestionForm() {
     };
 
     return (
-        <Card className="mt-12">
+        <Card className="m-12">
             <CardHeader>
                 <CardTitle>Cadastrar Nova Pergunta</CardTitle>
             </CardHeader>
