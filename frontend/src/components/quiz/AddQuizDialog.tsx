@@ -2,12 +2,12 @@ import {Drawer, DrawerContent} from "@/components/ui/drawer";
 import {AddQuizForm} from "@/components/form/add/AddQuizForm";
 import {Button} from "@/components/ui/button";
 
-interface CreateQuizProps {
+interface AddQuizDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
 }
 
-export function CreateQuiz({open, onOpenChange}: CreateQuizProps) {
+export function AddQuizDialog({open, onOpenChange}: AddQuizDialogProps) {
     return (
         <Drawer open={open} onOpenChange={onOpenChange}>
             <DrawerContent>

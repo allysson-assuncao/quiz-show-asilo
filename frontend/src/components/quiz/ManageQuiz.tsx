@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { CreateQuiz } from "./CreateQuiz";
+import { AddQuizDialog } from "./AddQuizDialog";
 
 export function ManageQuiz() {
     const [showCreateQuiz, setShowCreateQuiz] = useState(false);
@@ -11,7 +11,7 @@ export function ManageQuiz() {
             <Button onClick={() => setShowCreateQuiz(true)}>
                 CRIAR QUIZ
             </Button>
-            <CreateQuiz open={showCreateQuiz} onOpenChange={setShowCreateQuiz} />
+            <AddQuizDialog open={showCreateQuiz} onOpenChange={setShowCreateQuiz} />
         </div>
     );
 }

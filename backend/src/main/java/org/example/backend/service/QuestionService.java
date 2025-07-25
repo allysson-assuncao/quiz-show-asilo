@@ -1,6 +1,7 @@
 package org.example.backend.service;
 
 import org.example.backend.dto.Question.QuestionRequestDTO;
+import org.example.backend.dto.Question.SimpleQuestionDTO;
 import org.example.backend.model.Choice;
 import org.example.backend.model.Question;
 import org.example.backend.repository.QuestionRepository;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,6 +41,10 @@ public class QuestionService {
         question.setChoices(choices);
 
         return this.questionRepository.save(question);
+    }
+
+    public List<SimpleQuestionDTO> getAllSimpleQuestions() {
+        return this.questionRepository.findAllSimple();
     }
 
 }

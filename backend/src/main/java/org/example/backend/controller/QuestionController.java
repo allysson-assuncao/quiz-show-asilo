@@ -2,6 +2,7 @@ package org.example.backend.controller;
 
 import jakarta.validation.Valid;
 import org.example.backend.dto.Question.QuestionRequestDTO;
+import org.example.backend.dto.Question.SimpleQuestionDTO;
 import org.example.backend.model.Question;
 import org.example.backend.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -25,7 +27,7 @@ public class QuestionController {
 
     @PostMapping("register")
     public ResponseEntity<Question> createQuestion(@Valid @RequestBody QuestionRequestDTO questionRequestDTO) {
-        Question createdQuestion = questionService.createQuestion(questionRequestDTO);
+        Question createdQuestion = this.questionService.createQuestion(questionRequestDTO);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -34,6 +36,12 @@ public class QuestionController {
                 .toUri();
 
         return ResponseEntity.created(location).body(createdQuestion);
+    }
+
+    @GetMapping("/select-all-simple")
+    public ResponseEntity<List<SimpleQuestionDTO>> getAllSimpleQuestions() {
+        List<SimpleQuestionDTO> questions = this.questionService.getAllSimpleQuestions();
+        return ResponseEntity.ok(questions);
     }
 
 }
