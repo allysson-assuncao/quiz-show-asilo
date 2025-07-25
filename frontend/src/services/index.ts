@@ -15,3 +15,7 @@ export const user = axios.create({
 export const question = axios.create({
     baseURL: `http://localhost:${port}/app/question`,
 });
+
+export const quiz = axios.create({
+    baseURL: `http://localhost:${port}/app/quiz`,
+});
