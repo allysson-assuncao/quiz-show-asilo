@@ -1,5 +1,6 @@
 package org.example.backend.service;
 
+import org.example.backend.repository.QuestionRepository;
 import org.example.backend.repository.QuizRepository;
 import org.springframework.stereotype.Service;
 
