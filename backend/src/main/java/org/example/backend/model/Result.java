@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Table(name = "result")
 @Entity
@@ -35,5 +36,13 @@ public class Result {
     @OneToMany(mappedBy = "result", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Answer> answers;
+
+    @ManyToMany
+    @JoinTable(
+        name = "user_result",
+        joinColumns = @JoinColumn(name = "result_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> users;
 
 }
