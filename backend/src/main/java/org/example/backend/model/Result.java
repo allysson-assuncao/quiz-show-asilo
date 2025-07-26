@@ -39,10 +39,22 @@ public class Result {
 
     @ManyToMany
     @JoinTable(
-        name = "user_result",
-        joinColumns = @JoinColumn(name = "result_id"),
-        inverseJoinColumns = @JoinColumn(name = "user_id")
+            name = "user_result",
+            joinColumns = @JoinColumn(name = "result_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<User> users;
+
+    public void addUser(User user) {
+        if (users.add(user)) {
+            user.addResult(this);
+        }
+    }
+
+    public void removeUser(User user) {
+        if (users.remove(user)) {
+            user.removeResult(this);
+        }
+    }
 
 }

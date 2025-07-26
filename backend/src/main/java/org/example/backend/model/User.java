@@ -45,6 +45,18 @@ public class User implements UserDetails {
     @ManyToMany(mappedBy = "users")
     private Set<Result> results;
 
+    public void addResult(Result result) {
+        if (results.add(result)) {
+            result.addUser(this);
+        }
+    }
+
+    public void removeResult(Result result) {
+        if (results.remove(result)) {
+            result.removeUser(this);
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
