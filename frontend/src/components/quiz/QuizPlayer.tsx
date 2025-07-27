@@ -132,7 +132,7 @@ export function QuizPlayer({quiz}: QuizPlayerProps) {
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button onClick={() => router.push('/quizzes')} className="w-full">
+                        <Button onClick={() => router.push('/dashboard/take-quiz')} className="w-full">
                             Ver outros quizzes
                         </Button>
                     </DialogFooter>

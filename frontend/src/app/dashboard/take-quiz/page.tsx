@@ -1,13 +1,13 @@
 'use client'
 
-import QuizzesListPage from "@/components/quiz/QuizzesListPage";
+import QuizzesList from "@/components/quiz/QuizzesList";
 
-const TakeQuizPage = () => {
+const QuizzesListPage = () => {
     return (
         <div className="h-full">
-            <QuizzesListPage/>
+            <QuizzesList/>
         </div>
     )
 }
 
-export default TakeQuizPage
+export default QuizzesListPage

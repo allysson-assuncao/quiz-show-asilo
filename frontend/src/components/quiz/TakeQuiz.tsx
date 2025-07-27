@@ -1,13 +1,9 @@
-import {useParams} from "next/navigation";
 import {useQuery} from "react-query";
 import {fetchQuizForTaking} from "@/services/quizService";
 import {Skeleton} from "@/components/ui/skeleton";
 import {QuizPlayer} from "@/components/quiz/QuizPlayer";
 
-export default function TakeQuizPage() {
-    const params = useParams();
-    const quizId = params.quizId as string;
-
+const TakeQuiz = ({quizId} : { quizId: string}) => {
     const {data: quiz, isLoading, error} = useQuery({
         queryKey: ['quizForTaking', quizId],
         queryFn: () => fetchQuizForTaking(quizId),
@@ -31,3 +27,5 @@ export default function TakeQuizPage() {
 
     return <QuizPlayer quiz={quiz}/>;
 }
+
+export default TakeQuiz;

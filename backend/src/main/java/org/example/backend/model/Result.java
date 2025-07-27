@@ -6,7 +6,6 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @Table(name = "result")
 @Entity
@@ -37,24 +36,8 @@ public class Result {
     @JsonIgnore
     private List<Answer> answers;
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_result",
-            joinColumns = @JoinColumn(name = "result_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private Set<User> users;
-
-    public void addUser(User user) {
-        if (users.add(user)) {
-            user.addResult(this);
-        }
-    }
-
-    public void removeUser(User user) {
-        if (users.remove(user)) {
-            user.removeResult(this);
-        }
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
 }

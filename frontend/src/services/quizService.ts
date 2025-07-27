@@ -12,12 +12,12 @@ export const createQuizRequest = async (data: QuizFormData) => {
 };
 
 export const fetchQuizForTaking = async (quizId: string): Promise<QuizForTaking> => {
-    const {data} = await quiz.get(`/${quizId}/take`, {
+    const response = await quiz.get(`/${quizId}/take`, {
         headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
     });
-    return data;
+    return response.data;
 };
 
 export const fetchAllSimpleQuizzes = async (): Promise<SimpleQuiz[]> => {

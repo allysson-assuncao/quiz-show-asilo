@@ -64,7 +64,7 @@ public class ResultService {
         newResult.setQuiz(quiz);
         newResult.setCreatedAt(LocalDateTime.now());
 
-        newResult.addUser(user);
+        user.addResult(newResult);
 
         Result savedResult = this.resultRepository.save(newResult);
 

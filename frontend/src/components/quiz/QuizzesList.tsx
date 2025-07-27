@@ -5,7 +5,7 @@ import {Button} from "@/components/ui/button";
 import Link from "next/link";
 import {fetchAllSimpleQuizzes} from "@/services/quizService";
 
-export default function QuizzesListPage() {
+export default function QuizzesList() {
     const {data: quizzes, isLoading} = useQuery({
         queryKey: ['simpleQuizzes'],
         queryFn: fetchAllSimpleQuizzes
@@ -27,7 +27,7 @@ export default function QuizzesListPage() {
                         </CardContent>
                         <CardFooter>
                             <Button asChild className="w-full">
-                                <Link href={`/quizzes/${quiz.id}`}>Começar Agora</Link>
+                                <Link href={`/dashboard/quizzes/${quiz.id}`}>Começar Agora</Link>
                             </Button>
                         </CardFooter>
                     </Card>

@@ -54,7 +54,7 @@ const data = {
             items: [
                 {
                     title: "Responder Quiz",
-                    url: '/dashboard/answer/quiz',
+                    url: '/dashboard/take-quiz',
                 },
             ],
         },

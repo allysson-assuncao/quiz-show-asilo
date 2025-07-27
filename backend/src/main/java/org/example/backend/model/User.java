@@ -7,10 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Table(name = "users")
 @Entity
@@ -42,19 +39,17 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false)
     private UserRole role;
 
-    @ManyToMany(mappedBy = "users")
-    private Set<Result> results;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Result> results = new HashSet<>();
 
     public void addResult(Result result) {
-        if (results.add(result)) {
-            result.addUser(this);
-        }
+        this.results.add(result);
+        result.setUser(this);
     }
 
     public void removeResult(Result result) {
-        if (results.remove(result)) {
-            result.removeUser(this);
-        }
+        this.results.remove(result);
+        result.setUser(null);
     }
 
     @Override
