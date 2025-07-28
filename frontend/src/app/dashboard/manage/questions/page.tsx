@@ -1,6 +1,6 @@
 'use client'
 
-import {ManageQuestion} from "@/components/form/manage/ManageQuestion";
+import {ManageQuestion} from "@/components/question/ManageQuestion";
 
 const QuestionPage = () => {
     return (

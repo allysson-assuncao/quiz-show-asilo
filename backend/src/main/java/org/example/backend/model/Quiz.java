@@ -26,7 +26,7 @@ public class Quiz {
     @Column(name = "description")
     private String description;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
         name = "quiz_question",
         joinColumns = @JoinColumn(name = "quiz_id"),
