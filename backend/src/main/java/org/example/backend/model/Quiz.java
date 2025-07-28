@@ -16,7 +16,7 @@ import java.util.UUID;
 @ToString(exclude = {"questions", "result"})
 public class Quiz {
     @Id
-    @Column(name = "id", nullable = false, unique = true, updatable = false)
+    @Column(name = "id", nullable = false, unique = true, updatable = false, columnDefinition = "VARCHAR(36)")
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
