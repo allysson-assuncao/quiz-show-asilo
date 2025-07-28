@@ -54,3 +54,25 @@ export interface ResultSummary {
     wrongAnswers: number;
     score: number;
 }
+
+export interface QuizRankingEntry {
+    rank: number;
+    userName: string;
+    score: number;
+    completedAt: string;
+}
+
+export interface QuizMetrics {
+    topScorerName: string;
+    topScore: number;
+    averageScore: number;
+    totalAttempts: number;
+    distinctParticipants: number;
+}
+
+export interface PagedResponse<T> {
+    content: T[];
+    totalPages: number;
+    totalElements: number;
+    
+}
