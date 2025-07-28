@@ -23,14 +23,14 @@ public class Choice {
     @Column(name = "text", nullable = false)
     private String text;
 
-    @Column(name = "is_correct", nullable = false, columnDefinition = "DEFAULT false")
+    @Column(name = "is_correct", nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
     private boolean isCorrect;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
     private Question question;
 
-    @ManyToMany(mappedBy = "choices", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "choices", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Answer> answers;
 
