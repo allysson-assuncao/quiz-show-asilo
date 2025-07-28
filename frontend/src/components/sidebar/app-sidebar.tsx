@@ -74,26 +74,18 @@ const data = {
                 }
             ],
         },
-        /*{
-            title: 'Administrador',
-            /!*url: "#",*!/
-            icon: ShieldPlusIcon,
-            isActive: false,
+        {
+            title: "Relatórios",
+            /*url: "#",*/
+            icon: FolderKanbanIcon,
+            isActive: true,
             items: [
                 {
-                    title: 'Relatório de Vendas',
-                    url: '/dashboard/table/sales',
-                },
-                {
-                    title: 'Relatório de Operação',
-                    url: '/dashboard/table/operation',
-                },
-                {
-                    title: 'Relatório de Funcionários',
-                    url: '/dashboard/table/workers',
+                    title: "Rank de Resultados",
+                    url: '/dashboard/report',
                 },
             ],
-        },*/
+        },
     ],
     projects: [
         {

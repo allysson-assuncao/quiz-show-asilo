@@ -60,16 +60,17 @@ public class ResultService {
             }
         }
 
+        int totalQuestions = quiz.getQuestions().size();
+        double score = totalQuestions > 0 ? ((double) correctAnswersCount / totalQuestions) * 100 : 0;
+
         Result newResult = new Result();
         newResult.setQuiz(quiz);
         newResult.setCreatedAt(LocalDateTime.now());
+        newResult.setScore(score);
 
         user.addResult(newResult);
 
         Result savedResult = this.resultRepository.save(newResult);
-
-        int totalQuestions = quiz.getQuestions().size();
-        double score = totalQuestions > 0 ? ((double) correctAnswersCount / totalQuestions) * 100 : 0;
 
         return new ResultSummaryDTO(
                 savedResult.getId(),

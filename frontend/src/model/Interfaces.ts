@@ -50,7 +50,6 @@ export interface ResultSummary {
     resultId: number;
     totalQuestions: number;
     correctAnswers: number;
-
     wrongAnswers: number;
     score: number;
 }
