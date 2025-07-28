@@ -15,7 +15,7 @@ public interface ResultRepository extends JpaRepository<Result, Long> {
 
     @Query("""
                 SELECT
-                    new com.seuprojeto.quiz.dto.report.QuizMetricsDTO(
+                    new org.example.backend.dto.Quiz.QuizMetricsDTO(
                         (SELECT u.name FROM Result r_top JOIN r_top.user u WHERE r_top.quiz.id = :quizId ORDER BY r_top.score DESC, r_top.createdAt ASC LIMIT 1),
                         (SELECT MAX(r_max.score) FROM Result r_max WHERE r_max.quiz.id = :quizId),
                         AVG(r.score),

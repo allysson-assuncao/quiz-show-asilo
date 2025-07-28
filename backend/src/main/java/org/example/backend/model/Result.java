@@ -20,6 +20,9 @@ public class Result {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(name = "score")
+    private double score;
+
     @Column(name = "time_start",
             nullable = false,
             columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
