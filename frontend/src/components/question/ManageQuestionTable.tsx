@@ -11,26 +11,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import { SimpleQuestion } from "@/model/Interfaces";
-import { Plus } from "lucide-react";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger
-} from "@/components/ui/dialog";
-import { AddQuestionForm } from "@/components/form/add/AddQuestionForm";
-import {
-    Drawer,
-    DrawerClose,
-    DrawerContent,
-    DrawerDescription,
-    DrawerFooter,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerTrigger
-} from "@/components/ui/drawer";
 
 const ManageQuestionTable = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -39,7 +19,6 @@ const ManageQuestionTable = () => {
     const [pageSize] = useState(10); // Fixed page size for simplicity
     const [totalPages, setTotalPages] = useState(0);
     const [cachedPages, setCachedPages] = useState<{ [key: number]: SimpleQuestion[] }>({});
-    const [openAddQuestion, setOpenAddQuestion] = useState(false);
 
 
     const { data: tableData, error: tableError, isLoading: isTableLoading } = useQuery(
