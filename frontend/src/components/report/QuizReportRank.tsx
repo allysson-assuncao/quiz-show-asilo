@@ -1,17 +1,17 @@
-import { useState } from "react";
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import {useState} from "react";
+import {ColumnDef, flexRender, getCoreRowModel, useReactTable} from "@tanstack/react-table";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
+import {Button} from "@/components/ui/button";
+import {Skeleton} from "@/components/ui/skeleton";
 import {useQuery} from "react-query";
 import {fetchQuizRanking} from "@/services/reportService";
 import {QuizRankingEntry} from "@/model/Interfaces";
 
-export function QuizReportRank({ quizId }: { quizId: string }) {
+export function QuizReportRank({quizId}: { quizId: string }) {
     const [page, setPage] = useState(0);
     const [pageSize] = useState(10);
 
-    const { data: pagedData, isLoading } = useQuery({
+    const {data: pagedData, isLoading} = useQuery({
         queryKey: ['quizRanking', quizId, page, pageSize],
         queryFn: () => fetchQuizRanking(quizId, page, pageSize),
         enabled: !!quizId,
@@ -19,10 +19,28 @@ export function QuizReportRank({ quizId }: { quizId: string }) {
     });
 
     const columns: ColumnDef<QuizRankingEntry>[] = [
-        { accessorKey: "rank", header: "#" },
-        { accessorKey: "userName", header: "Usuário" },
-        { accessorKey: "score", header: "Pontuação", cell: ({ row }) => `${row.original.score.toFixed(1)}%` },
-        { accessorKey: "completedAt", header: "Data", cell: ({ row }) => new Date(row.original.completedAt).toLocaleDateString('pt-BR') },
+        {accessorKey: "rank", header: "#"},
+        {accessorKey: "userName", header: "Usuário"},
+        {
+            accessorKey: "score",
+            header: "Pontuação",
+            cell: ({row}) => {
+                const score = row.original.score;
+                if (score === null || score === undefined) {
+                    return <span className="text-muted-foreground">N/A</span>;
+                }
+                return `${score.toFixed(1)}%`;
+            }
+        },
+        {
+            accessorKey: "completedAt",
+            header: "Data",
+            cell: ({row}) => {
+                const date = row.original.completedAt;
+                if (!date) return <span className="text-muted-foreground">N/A</span>;
+                return new Date(date).toLocaleDateString('pt-BR');
+            }
+        },
     ];
 
     const table = useReactTable({
@@ -51,9 +69,13 @@ export function QuizReportRank({ quizId }: { quizId: string }) {
                     </TableHeader>
                     <TableBody>
                         {isLoading ? (
-                            Array.from({ length: 5 }).map((_, i) => (
-                                <TableRow key={i}>
-                                    {/*{columns.map(col => <TableCell key={`${col.accessorKey}-${i}`}><Skeleton className="h-6" /></TableCell>)}*/}
+                            Array.from({length: 5}).map((_, i) => (
+                                <TableRow key={`skeleton-row-${i}`}>
+                                    {columns.map(col => (
+                                        <TableCell key={`skeleton-cell-${col.id}-${i}`}>
+                                            <Skeleton className="h-6"/>
+                                        </TableCell>
+                                    ))}
                                 </TableRow>
                             ))
                         ) : table.getRowModel().rows.length ? (

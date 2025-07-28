@@ -21,7 +21,7 @@ public class Result {
     private long id;
 
     @Column(name = "score")
-    private double score;
+    private Double score;
 
     @Column(name = "time_start",
             nullable = false,

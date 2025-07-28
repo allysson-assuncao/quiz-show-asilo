@@ -43,9 +43,15 @@ public class ReportService {
     private QuizRankingEntryDTO mapToRankingDTO(Map<String, Object> map) {
         Long rank = ((Number) map.get("rank")).longValue();
         String userName = (String) map.get("username");
-        Double score = ((Number) map.get("score")).doubleValue();
-        LocalDateTime completedAt = ((Timestamp) map.get("completedat")).toLocalDateTime();
-
+        Double score = map.get("score") != null ? ((Number) map.get("score")).doubleValue() : null;
+        LocalDateTime completedAt = null;
+        if (map.get("completedAt") != null) {
+            if (map.get("completedAt") instanceof java.sql.Timestamp ts) {
+                completedAt = ts.toLocalDateTime();
+            } else if (map.get("completedAt") instanceof LocalDateTime ldt) {
+                completedAt = ldt;
+            }
+        }
         return new QuizRankingEntryDTO(rank, userName, score, completedAt);
     }
 

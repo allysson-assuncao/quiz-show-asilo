@@ -29,13 +29,15 @@ public interface ResultRepository extends JpaRepository<Result, Long> {
 
     @Query(value = """
                 SELECT
-                    RANK() OVER (ORDER BY r.score DESC, r.created_at ASC) as rank,
+                    RANK() OVER (ORDER BY r.score DESC, r.time_start ASC) as `rank`,
                     u.name as userName,
                     r.score,
-                    r.created_at as completedAt
+                    r.time_start as completedAt
                 FROM result r JOIN users u ON r.user_id = u.id
                 WHERE r.quiz_id = :quizId
-            """, nativeQuery = true)
+            """,
+            countQuery = "SELECT COUNT(*) FROM result WHERE quiz_id = :quizId",
+            nativeQuery = true)
     Page<Map<String, Object>> findQuizRanking(@Param("quizId") UUID quizId, Pageable pageable);
 
 }
