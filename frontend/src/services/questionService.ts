@@ -40,13 +40,14 @@ export const fetchQuestionsPage = async (params: FetchQuestionsPageParams)
 }
 
 export const deleteQuestion = async (data: DeleteQuestionFormData): Promise<boolean> => {
-    const response = await question.post('/delete-question', data, {
+    const response = await question.delete('/delete-question', {
         headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        data: data,
     })
     console.log(response.data)
-    if (response.data.status === 204) {
+    if (response.status === 204) {
         return true;
     }else {
         return false;

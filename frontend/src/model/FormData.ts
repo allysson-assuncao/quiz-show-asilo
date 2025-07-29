@@ -28,5 +28,5 @@ export interface QuestionFormData {
 }
 
 export interface DeleteQuestionFormData {
-    questionId: string;
+    id: string;
 }
