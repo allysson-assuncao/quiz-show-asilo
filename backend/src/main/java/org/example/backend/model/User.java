@@ -7,9 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Table(name = "users")
 @Entity
@@ -22,7 +20,7 @@ import java.util.UUID;
 public class User implements UserDetails {
 
     @Id
-    @Column(name = "id", nullable = false, unique = true, updatable = false, columnDefinition = "VARCHAR(36)")
+    @Column(name = "id", nullable = false, unique = true, updatable = false)
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
@@ -40,6 +38,19 @@ public class User implements UserDetails {
 
     @Column(name = "role", nullable = false)
     private UserRole role;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Result> results = new HashSet<>();
+
+    public void addResult(Result result) {
+        this.results.add(result);
+        result.setUser(this);
+    }
+
+    public void removeResult(Result result) {
+        this.results.remove(result);
+        result.setUser(null);
+    }
 
     @Override
     public boolean equals(Object o) {

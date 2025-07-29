@@ -16,7 +16,7 @@ import java.util.UUID;
 @ToString(exclude = {"questions", "result"})
 public class Quiz {
     @Id
-    @Column(name = "id", nullable = false, unique = true, updatable = false, columnDefinition = "VARCHAR(36)")
+    @Column(name = "id", nullable = false, unique = true, updatable = false)
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
@@ -26,7 +26,7 @@ public class Quiz {
     @Column(name = "description")
     private String description;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
         name = "quiz_question",
         joinColumns = @JoinColumn(name = "quiz_id"),
