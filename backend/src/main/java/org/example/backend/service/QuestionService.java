@@ -1,5 +1,8 @@
 package org.example.backend.service;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.example.backend.dto.Question.QuestionDeleteRequestDTO;
 import org.example.backend.dto.Question.QuestionRequestDTO;
 import org.example.backend.dto.Question.SimpleQuestionDTO;
 import org.example.backend.model.Choice;
@@ -20,6 +23,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class QuestionService {
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     private final QuestionRepository questionRepository;
 
@@ -66,6 +72,27 @@ public class QuestionService {
                         question.getText()
                 )
         );
+    }
+
+
+    @Transactional
+    public boolean deleteQuestion(QuestionDeleteRequestDTO requestDTO) {
+        UUID id = requestDTO.id();
+        if (questionRepository.existsById(id)) {
+            executeNativeDelete("DELETE FROM answer WHERE question_id = ?", id);
+            executeNativeDelete("DELETE FROM answer_choices WHERE choice_id IN (SELECT id FROM choice WHERE question_id = ?)", id);
+            executeNativeDelete("DELETE FROM quiz_question WHERE question_id = ?", id);
+            executeNativeDelete("DELETE FROM choice WHERE question_id = ?", id);
+            questionRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
+    private void executeNativeDelete(String query, UUID id) {
+        entityManager.createNativeQuery(query)
+                .setParameter(1, id)
+                .executeUpdate();
     }
 
     public List<SimpleQuestionDTO> getAllSimpleQuestions() {

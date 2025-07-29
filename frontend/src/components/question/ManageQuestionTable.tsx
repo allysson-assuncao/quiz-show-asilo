@@ -1,16 +1,17 @@
 'use client'
 
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { useState } from "react";
-import { fetchQuestionsPage } from "@/services/questionService";
+import {deleteQuestion, fetchQuestionsPage} from "@/services/questionService";
 import { DataTableSkeleton } from "@/components/skeleton/DataTableSkeleton";
 import { QuestionDataTable } from "./data-table/QuestionDataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import { SimpleQuestion } from "@/model/Interfaces";
+import {boolean} from "zod";
 
 const ManageQuestionTable = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -19,7 +20,7 @@ const ManageQuestionTable = () => {
     const [pageSize] = useState(10); // Fixed page size for simplicity
     const [totalPages, setTotalPages] = useState(0);
     const [cachedPages, setCachedPages] = useState<{ [key: number]: SimpleQuestion[] }>({});
-
+    const queryClient = useQueryClient();
 
     const { data: tableData, error: tableError, isLoading: isTableLoading } = useQuery(
         ['questions', page, pageSize],
@@ -45,9 +46,12 @@ const ManageQuestionTable = () => {
         // Implement edit logic here
     };
 
-    const handleDelete = (questionId: string) => {
+    const handleDelete = async (questionId: string) => {
         console.log("Deleting question ID:", questionId);
-        // Implement delete logic here
+        let success = await deleteQuestion({ questionId });
+        if (success) {
+            queryClient.invalidateQueries(['questions']);
+        }
     };
 
     const columns: ColumnDef<SimpleQuestion>[] = [
@@ -79,7 +83,10 @@ const ManageQuestionTable = () => {
                 <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => handleDelete(row.original.id)}
+                    onClick={() => {
+                        console.log('Delete button clicked', row.original, row.original.id);
+                        handleDelete(row.original.id);
+                    }}
                     aria-label="Excluir pergunta"
                 >
                     <Trash2 className="h-4 w-4 text-red-500" />

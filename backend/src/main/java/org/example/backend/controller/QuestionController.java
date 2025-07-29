@@ -2,6 +2,7 @@ package org.example.backend.controller;
 
 import jakarta.validation.Valid;
 import org.example.backend.dto.FilteredPageDTO;
+import org.example.backend.dto.Question.QuestionDeleteRequestDTO;
 import org.example.backend.dto.Question.QuestionRequestDTO;
 import org.example.backend.dto.Question.SimpleQuestionDTO;
 import org.example.backend.model.Question;
@@ -56,6 +57,14 @@ public class QuestionController {
     ) {
         Page<SimpleQuestionDTO> questionPage = this.questionService.getAllPageableQuestions(page, size, orderBy, direction);
         return ResponseEntity.ok(new FilteredPageDTO<>(questionPage.getContent(), questionPage.getTotalPages()));
+    }
+
+    @DeleteMapping("/delete-question")
+    public ResponseEntity<Boolean> deleteQuestion(
+            @RequestBody QuestionDeleteRequestDTO questionDeleteRequestDTO
+    ) {
+        boolean deleted = this.questionService.deleteQuestion(questionDeleteRequestDTO);
+        return ResponseEntity.ok(deleted);
     }
 
 }

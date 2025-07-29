@@ -1,5 +1,5 @@
 import {question} from "@/services/index";
-import {QuestionFormData} from "@/model/FormData";
+import {DeleteQuestionFormData, QuestionFormData} from "@/model/FormData";
 import {FetchQuestionsPageParams, FetchQuestionsPageResponse, SimpleQuestion} from "@/model/Interfaces";
 
 export const createQuestionRequest = async (data: QuestionFormData) => {
@@ -37,4 +37,19 @@ export const fetchQuestionsPage = async (params: FetchQuestionsPageParams)
     console.log(response)
     console.log(response.data)
     return response.data;
+}
+
+export const deleteQuestion = async (data: DeleteQuestionFormData): Promise<boolean> => {
+    const response = await question.post('/delete-question', {
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: data,
+    })
+    console.log(response.data)
+    if (response.data.status === 204) {
+        return true;
+    }else {
+        return false;
+    }
 }
