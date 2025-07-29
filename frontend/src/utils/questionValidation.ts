@@ -1,5 +1,5 @@
 import {z} from "zod";
-import {choiceSchema} from "@/utils/operations/choiceValidation";
+import {choiceSchema} from "@/utils/choiceValidation";
 
 export const questionFormSchema = z.object({
   text: z.string().min(5, { message: "A pergunta deve ter no mínimo 5 caracteres." }),
