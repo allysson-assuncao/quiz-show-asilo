@@ -1,11 +1,14 @@
 package org.example.backend.controller;
 
 import jakarta.validation.Valid;
+import org.example.backend.dto.FilteredPageDTO;
 import org.example.backend.dto.Question.QuestionRequestDTO;
 import org.example.backend.dto.Question.SimpleQuestionDTO;
 import org.example.backend.model.Question;
 import org.example.backend.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -42,6 +45,17 @@ public class QuestionController {
     public ResponseEntity<List<SimpleQuestionDTO>> getAllSimpleQuestions() {
         List<SimpleQuestionDTO> questions = this.questionService.getAllSimpleQuestions();
         return ResponseEntity.ok(questions);
+    }
+
+    @GetMapping("/get-questions-page")
+    public ResponseEntity<FilteredPageDTO<SimpleQuestionDTO>> fetchQuestionsI(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "text") String orderBy,
+            @RequestParam(defaultValue = "ASC") Sort.Direction direction
+    ) {
+        Page<SimpleQuestionDTO> questionPage = this.questionService.getAllPageableQuestions(page, size, orderBy, direction);
+        return ResponseEntity.ok(new FilteredPageDTO<>(questionPage.getContent(), questionPage.getTotalPages()));
     }
 
 }
