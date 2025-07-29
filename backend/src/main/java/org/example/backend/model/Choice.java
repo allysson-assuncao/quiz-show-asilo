@@ -30,7 +30,7 @@ public class Choice {
     @JoinColumn(name = "question_id")
     private Question question;
 
-    @ManyToMany(mappedBy = "choices", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "choices", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Answer> answers;
 
