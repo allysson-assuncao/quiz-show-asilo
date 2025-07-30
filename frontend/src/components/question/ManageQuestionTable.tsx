@@ -3,7 +3,7 @@
 import { useQuery, useQueryClient } from "react-query";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
-import { useState } from "react";
+import React, { useState } from "react";
 import {deleteQuestion, fetchQuestionsPage} from "@/services/questionService";
 import { DataTableSkeleton } from "@/components/skeleton/DataTableSkeleton";
 import { QuestionDataTable } from "./data-table/QuestionDataTable";
@@ -11,7 +11,14 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import { SimpleQuestion } from "@/model/Interfaces";
-import {boolean} from "zod";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogFooter,
+    DialogTitle,
+    DialogDescription,
+} from "@/components/ui/dialog";
 
 const ManageQuestionTable = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -19,7 +26,8 @@ const ManageQuestionTable = () => {
     const [page, setPage] = useState(0);
     const [pageSize] = useState(10); // Fixed page size for simplicity
     const [totalPages, setTotalPages] = useState(0);
-    const [cachedPages, setCachedPages] = useState<{ [key: number]: SimpleQuestion[] }>({});
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [selectedDeleteId, setSelectedDeleteId] = useState<string | null>(null);
     const queryClient = useQueryClient();
 
     const { data: tableData, error: tableError, isLoading: isTableLoading } = useQuery(
@@ -32,24 +40,35 @@ const ManageQuestionTable = () => {
                 direction: 'ASC'
             });
             setTotalPages(res.totalPages);
-            setCachedPages((prev) => ({ ...prev, [page]: res.content }));
             return res.content;
         },
         {
             keepPreviousData: true,
-            initialData: cachedPages[page] || undefined,
         },
     );
+    const [localTableData, setLocalTableData] = useState<SimpleQuestion[] | null>(null);
+
+    // Sync localTableData with tableData when tableData changes
+    React.useEffect(() => {
+        setLocalTableData(tableData || []);
+    }, [tableData]);
 
     const handleEdit = (question: SimpleQuestion) => {
         console.log("Editing question:", question);
         // Implement edit logic here
     };
 
-    const handleDelete = async (questionId: string) => {
-        console.log("Deleting question ID:", questionId);
-        let success = await deleteQuestion({ questionId });
+    const handleDelete = async (id: string) => {
+        setDeleteDialogOpen(false);
+        setSelectedDeleteId(null);
+        // Optimistically update UI
+        setLocalTableData((prev) => prev ? prev.filter(q => q.id !== id) : prev);
+        console.log("Deleting question ID:", id);
+        const success = await deleteQuestion({ id });
         if (success) {
+            queryClient.invalidateQueries(['questions']);
+        } else {
+            // If failed, refetch to restore
             queryClient.invalidateQueries(['questions']);
         }
     };
@@ -84,8 +103,8 @@ const ManageQuestionTable = () => {
                     variant="ghost"
                     size="icon"
                     onClick={() => {
-                        console.log('Delete button clicked', row.original, row.original.id);
-                        handleDelete(row.original.id);
+                        setSelectedDeleteId(row.original.id);
+                        setDeleteDialogOpen(true);
                     }}
                     aria-label="Excluir pergunta"
                 >
@@ -103,11 +122,37 @@ const ManageQuestionTable = () => {
         <div className={"container mx-auto py-10 w-full max-w-[1920px] 5xl:mx-auto 5xl:px-32"}>
             <QuestionDataTable
                 columns={columns}
-                data={tableData || []}
+                data={localTableData || []}
                 page={page}
                 setPage={setPage}
                 totalPages={totalPages}
             />
+            <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Confirmar exclusão</DialogTitle>
+                        <DialogDescription>
+                            Tem certeza que deseja excluir esta pergunta? Esta ação não pode ser desfeita.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button
+                            variant="secondary"
+                            onClick={() => setDeleteDialogOpen(false)}
+                        >
+                            Cancelar
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={() => {
+                                if (selectedDeleteId) handleDelete(selectedDeleteId);
+                            }}
+                        >
+                            Excluir
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };

@@ -37,7 +37,7 @@ public class QuestionController {
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
-                .path("/{id}")
+                .path("/{questionId}")
                 .buildAndExpand(createdQuestion.getId())
                 .toUri();
 
@@ -61,7 +61,7 @@ public class QuestionController {
         return ResponseEntity.ok(new FilteredPageDTO<>(questionPage.getContent(), questionPage.getTotalPages()));
     }
 
-    @DeleteMapping("/delete-question")
+    @PostMapping("/delete-question")
     public ResponseEntity<Boolean> deleteQuestion(
             @RequestBody QuestionDeleteRequestDTO questionDeleteRequestDTO
     ) {

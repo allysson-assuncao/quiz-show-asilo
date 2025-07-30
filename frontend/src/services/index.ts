@@ -19,3 +19,11 @@ export const question = axios.create({
 export const quiz = axios.create({
     baseURL: `http://localhost:${port}/app/quiz`,
 });
+
+export const result = axios.create({
+    baseURL: `http://localhost:${port}/app/result`,
+});
+
+export const report = axios.create({
+    baseURL: `http://localhost:${port}/app/report`,
+});

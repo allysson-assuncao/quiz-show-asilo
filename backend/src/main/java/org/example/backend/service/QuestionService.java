@@ -122,10 +122,10 @@ public class QuestionService {
 
     @Transactional
     public boolean deleteQuestion(QuestionDeleteRequestDTO requestDTO) {
-        UUID id = requestDTO.id();
+        UUID id = requestDTO.questionId();
         if (questionRepository.existsById(id)) {
             executeNativeDelete("DELETE FROM answer WHERE question_id = ?", id);
-            executeNativeDelete("DELETE FROM answer_choices WHERE choice_id IN (SELECT id FROM choice WHERE question_id = ?)", id);
+            executeNativeDelete("DELETE FROM answer_choices WHERE choice_id IN (SELECT questionId FROM choice WHERE question_id = ?)", id);
             executeNativeDelete("DELETE FROM quiz_question WHERE question_id = ?", id);
             executeNativeDelete("DELETE FROM choice WHERE question_id = ?", id);
             questionRepository.deleteById(id);
