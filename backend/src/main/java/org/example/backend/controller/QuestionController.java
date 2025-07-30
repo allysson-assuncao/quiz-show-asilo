@@ -72,7 +72,7 @@ public class QuestionController {
     @PostMapping("/update-question")
     public ResponseEntity<Question> updateQuestion(@Valid @RequestBody QuestionEditRequestDTO requestDTO) {
         //TODO...
-        return new ResponseEntity<Question>(HttpStatus.OK);0
+        return new ResponseEntity<Question>(HttpStatus.OK);
     }
 
 }

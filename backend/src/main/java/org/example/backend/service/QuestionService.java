@@ -89,9 +89,7 @@ public class QuestionService {
                     .updatedAt(LocalDateTime.now())
                     .choices(editChoices(requestDTO.choices()))
                     .build();
-
-
-
+            questionRepository.updateQuestionByObject(question);
             return true;
         }else{
             return false;
@@ -122,7 +120,7 @@ public class QuestionService {
 
     @Transactional
     public boolean deleteQuestion(QuestionDeleteRequestDTO requestDTO) {
-        UUID id = requestDTO.questionId();
+        UUID id = requestDTO.id();
         if (questionRepository.existsById(id)) {
             executeNativeDelete("DELETE FROM answer WHERE question_id = ?", id);
             executeNativeDelete("DELETE FROM answer_choices WHERE choice_id IN (SELECT questionId FROM choice WHERE question_id = ?)", id);
