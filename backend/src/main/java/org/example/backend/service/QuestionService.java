@@ -2,11 +2,15 @@ package org.example.backend.service;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.example.backend.dto.Choice.ChoiceEditRequestDTO;
+import org.example.backend.dto.Choice.ChoiceRequestDTO;
 import org.example.backend.dto.Question.QuestionDeleteRequestDTO;
+import org.example.backend.dto.Question.QuestionEditRequestDTO;
 import org.example.backend.dto.Question.QuestionRequestDTO;
 import org.example.backend.dto.Question.SimpleQuestionDTO;
 import org.example.backend.model.Choice;
 import org.example.backend.model.Question;
+import org.example.backend.repository.ChoiceRepository;
 import org.example.backend.repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,9 +20,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,15 +32,19 @@ public class QuestionService {
 
     private final QuestionRepository questionRepository;
 
+    private final ChoiceRepository choiceRepository;
+
     @Autowired
-    public QuestionService(QuestionRepository questionRepository) {
+    public QuestionService(QuestionRepository questionRepository, ChoiceRepository choiceRepository) {
         this.questionRepository = questionRepository;
+        this.choiceRepository = choiceRepository;
     }
 
     @Transactional
     public Question createQuestion(QuestionRequestDTO requestDTO) {
         Question question = new Question();
         question.setText(requestDTO.text());
+        question.setCreatedAt(LocalDateTime.now());
 
         Set<Choice> choices = requestDTO.choices().stream()
                 .map(choiceDTO -> {
@@ -74,6 +81,44 @@ public class QuestionService {
         );
     }
 
+    @Transactional
+    public boolean updateQuestion(QuestionEditRequestDTO requestDTO) {
+        if(questionRepository.existsById(requestDTO.questionId())) {
+            Question question = questionRepository.findById(requestDTO.questionId()).get();
+            question = Question.builder()
+                    .updatedAt(LocalDateTime.now())
+                    .choices(editChoices(requestDTO.choices()))
+                    .build();
+
+
+
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    private Set<Choice> editChoices(List<ChoiceEditRequestDTO> requestDTOs) {
+        Set<Choice> choices = new HashSet<>();
+
+        for (ChoiceEditRequestDTO dto : requestDTOs) {
+            if(choiceRepository.existsById(dto.choiceId())) {
+                Choice choice = choiceRepository.findById(dto.choiceId()).get();
+                choice = Choice.builder()
+                        .text(dto.newText())
+                        .isCorrect(dto.isCorrect())
+                        .build();
+
+                choiceRepository.updateChoiceByObject(choice);
+
+                choices.add(choice);
+
+            }
+
+        }
+
+        return choices;
+    }
 
     @Transactional
     public boolean deleteQuestion(QuestionDeleteRequestDTO requestDTO) {
