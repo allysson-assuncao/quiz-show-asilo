@@ -116,7 +116,8 @@ public class QuestionService {
         return choices;
     }
 
-    public QuestionEditRequestDTO getQuestionForEditById(UUID id){
+    public QuestionEditRequestDTO getEditQuestionById(UUID id){
+        if(!questionRepository.existsById(id)) return null;
         Question question = questionRepository.findById(id).get();
         QuestionEditRequestDTO dto = QuestionEditRequestDTO.builder()
                 .questionId(question.getId())

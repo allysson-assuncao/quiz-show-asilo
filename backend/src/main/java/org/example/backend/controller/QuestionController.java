@@ -18,6 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -75,6 +76,11 @@ public class QuestionController {
             return new ResponseEntity<>(requestDTO, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/edit/{id}")
+    public ResponseEntity<QuestionEditRequestDTO> getEditQuestionById(@PathVariable UUID id){
+        return new ResponseEntity<>(questionService.getEditQuestionById(id), HttpStatus.OK);
     }
 
 }
