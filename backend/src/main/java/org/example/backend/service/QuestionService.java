@@ -116,6 +116,25 @@ public class QuestionService {
         return choices;
     }
 
+    public QuestionEditRequestDTO getQuestionForEditById(UUID id){
+        Question question = questionRepository.findById(id).get();
+        QuestionEditRequestDTO dto = QuestionEditRequestDTO.builder()
+                .questionId(question.getId())
+                .newText(question.getText())
+                .choices(question.getChoices().stream().map(this::convertToDTO).toList())
+                .build();
+
+        return dto;
+    }
+
+    private ChoiceEditRequestDTO convertToDTO(Choice choice) {
+        return ChoiceEditRequestDTO.builder()
+                .choiceId(choice.getId())
+                .newText(choice.getText())
+                .isCorrect(choice.isCorrect())
+                .build();
+    }
+
     @Transactional
     public boolean deleteQuestion(QuestionDeleteRequestDTO requestDTO) {
         UUID id = requestDTO.id();

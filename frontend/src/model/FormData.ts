@@ -18,15 +18,25 @@ export interface QuizFormData {
 }
 
 export interface ChoiceFormData {
-  id: string | null;
   text: string;
   isCorrect: boolean;
 }
 
 export interface QuestionFormData {
-  id: string | null;
-  text:string;
+  text: string;
   choices: ChoiceFormData[];
+}
+
+export interface EditChoiceFormData {
+    choiceId: string;
+    newText: string;
+    isCorrect: boolean;
+}
+
+export interface EditQuestionFormData {
+    questionId: string;
+    newText: string;
+    choices: EditChoiceFormData[];
 }
 
 export interface DeleteQuestionFormData {
