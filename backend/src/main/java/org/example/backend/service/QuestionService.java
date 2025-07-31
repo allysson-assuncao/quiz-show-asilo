@@ -102,10 +102,8 @@ public class QuestionService {
         for (ChoiceEditRequestDTO dto : requestDTOs) {
             if(choiceRepository.existsById(dto.choiceId())) {
                 Choice choice = choiceRepository.findById(dto.choiceId()).get();
-                choice = Choice.builder()
-                        .text(dto.newText())
-                        .isCorrect(dto.isCorrect())
-                        .build();
+                choice.setText(dto.newText());
+                choice.setCorrect(dto.isCorrect());
 
                 choiceRepository.updateChoiceByObject(choice);
 

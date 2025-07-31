@@ -11,6 +11,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import { SimpleQuestion } from "@/model/Interfaces";
+import { EditQuestionDialog } from "./EditQuestionDialog";
 import {
     Dialog,
     DialogContent,
@@ -28,6 +29,8 @@ const ManageQuestionTable = () => {
     const [totalPages, setTotalPages] = useState(0);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedDeleteId, setSelectedDeleteId] = useState<string | null>(null);
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
+    const [selectedEditQuestion, setSelectedEditQuestion] = useState<SimpleQuestion | null>(null);
     const queryClient = useQueryClient();
 
     const { data: tableData, error: tableError, isLoading: isTableLoading } = useQuery(
@@ -54,8 +57,8 @@ const ManageQuestionTable = () => {
     }, [tableData]);
 
     const handleEdit = (question: SimpleQuestion) => {
-        console.log("Editing question:", question);
-        // Implement edit logic here
+        setSelectedEditQuestion(question);
+        setEditDialogOpen(true);
     };
 
     const handleDelete = async (id: string) => {
@@ -153,6 +156,10 @@ const ManageQuestionTable = () => {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+            <EditQuestionDialog
+                open={editDialogOpen}
+                onOpenChange={setEditDialogOpen}
+            />
         </div>
     );
 };

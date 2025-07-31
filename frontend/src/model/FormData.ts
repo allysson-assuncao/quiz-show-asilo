@@ -18,11 +18,13 @@ export interface QuizFormData {
 }
 
 export interface ChoiceFormData {
+  id: string | null;
   text: string;
   isCorrect: boolean;
 }
 
 export interface QuestionFormData {
+  id: string | null;
   text:string;
   choices: ChoiceFormData[];
 }

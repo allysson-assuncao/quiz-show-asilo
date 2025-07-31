@@ -69,10 +69,12 @@ public class QuestionController {
         return ResponseEntity.ok(deleted);
     }
 
-    @PostMapping("/update-question")
-    public ResponseEntity<Question> updateQuestion(@Valid @RequestBody QuestionEditRequestDTO requestDTO) {
-        //TODO...
-        return new ResponseEntity<Question>(HttpStatus.OK);
+    @PutMapping("/update-question")
+    public ResponseEntity<QuestionEditRequestDTO> updateQuestion(@Valid @RequestBody QuestionEditRequestDTO requestDTO) {
+        if(questionService.updateQuestion(requestDTO)){
+            return new ResponseEntity<>(requestDTO, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
 }
