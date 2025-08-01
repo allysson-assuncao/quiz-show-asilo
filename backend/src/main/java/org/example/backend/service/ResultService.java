@@ -22,14 +22,12 @@ public class ResultService {
 
     private final ResultRepository resultRepository;
     private final QuizRepository quizRepository;
-    private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
 
     @Autowired
-    public ResultService(ResultRepository resultRepository, QuizRepository quizRepository, QuestionRepository questionRepository, UserRepository userRepository) {
+    public ResultService(ResultRepository resultRepository, QuizRepository quizRepository, UserRepository userRepository) {
         this.resultRepository = resultRepository;
         this.quizRepository = quizRepository;
-        this.questionRepository = questionRepository;
         this.userRepository = userRepository;
     }
 
@@ -55,7 +53,6 @@ public class ResultService {
         int correctAnswersCount = 0;
         int wrongAnswersCount = 0;
 
-        // Para facilitar a busca das respostas do usuário por questão
         Map<UUID, Set<UUID>> userAnswersMap = dto.answers().stream()
                 .collect(Collectors.toMap(
                         UserAnswerDTO::questionId,
@@ -67,28 +64,20 @@ public class ResultService {
             Set<UUID> userChoiceIds = userAnswersMap.getOrDefault(question.getId(), Collections.emptySet());
 
             if (correctChoiceIds.isEmpty()) {
-                // Questão sem alternativas corretas, ignora
                 continue;
             }
 
-            // Pontuação da questão (cada questão vale 1 ponto)
             double questionScore = 0.0;
 
-            // Conta quantas alternativas corretas o usuário marcou
             long correctMarked = userChoiceIds.stream().filter(correctChoiceIds::contains).count();
 
-            // Conta quantas alternativas incorretas o usuário marcou
             long incorrectMarked = userChoiceIds.stream().filter(id -> !correctChoiceIds.contains(id)).count();
 
-            // Se o usuário marcou alternativas incorretas, a questão é considerada errada (pode-se ajustar essa regra)
             if (incorrectMarked > 0) {
                 wrongAnswersCount++;
-                // Não soma pontos para essa questão
             } else {
-                // Soma pontos proporcionais às corretas marcadas
                 questionScore = ((double) correctMarked) / correctChoiceIds.size();
                 totalScore += questionScore;
-                // Considera correta se marcou todas as corretas e nenhuma errada
                 if (correctMarked == correctChoiceIds.size()) {
                     correctAnswersCount++;
                 } else {
@@ -97,7 +86,6 @@ public class ResultService {
             }
         }
 
-        // Normaliza a pontuação para 0-100
         double score = totalQuestions > 0 ? (totalScore / totalQuestions) * 100 : 0;
 
         Result newResult = new Result();
