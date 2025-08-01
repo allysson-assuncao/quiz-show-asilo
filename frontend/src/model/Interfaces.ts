@@ -19,6 +19,7 @@ export interface Choice {
 export interface QuestionForTaking {
     id: string;
     text: string;
+    isMultipleChoice: boolean;
     choices: Choice[];
 }
 
@@ -37,7 +38,7 @@ export interface SimpleQuiz {
 
 export interface UserAnswer {
     questionId: string;
-    choiceId: string;
+    choiceIds: string[];
 }
 
 export interface ResultRequest {

@@ -17,6 +17,8 @@ import {
     DialogHeader,
     DialogTitle
 } from "@/components/ui/dialog";
+import {Checkbox} from "@/components/ui/checkbox";
+import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 
 interface QuizPlayerProps {
     quiz: QuizForTaking;
@@ -26,14 +28,14 @@ export function QuizPlayer({quiz}: QuizPlayerProps) {
     const router = useRouter();
     const userEmail = useSelector((state: RootState) => state.auth.email);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [answers, setAnswers] = useState<Record<string, string>>({});
+    const [answers, setAnswers] = useState<Record<string, string[]>>({});
     const [showResultDialog, setShowResultDialog] = useState(false);
     const [resultSummary, setResultSummary] = useState<ResultSummary | null>(null);
 
     const currentQuestion = quiz.questions[currentQuestionIndex];
     const isFirstQuestion = currentQuestionIndex === 0;
     const isLastQuestion = currentQuestionIndex === quiz.questions.length - 1;
-    const isAnswered = !!answers[currentQuestion.id];
+    const isAnswered = answers[currentQuestion.id] && answers[currentQuestion.id].length > 0;
 
     const mutation = useMutation({
         mutationFn: submitResultRequest,
@@ -48,7 +50,17 @@ export function QuizPlayer({quiz}: QuizPlayerProps) {
     });
 
     const handleSelectChoice = (choiceId: string) => {
-        setAnswers(prev => ({...prev, [currentQuestion.id]: choiceId}));
+        const questionId = currentQuestion.id;
+
+        if (currentQuestion.isMultipleChoice) {
+            const currentChoices = answers[questionId] || [];
+            const newChoices = currentChoices.includes(choiceId)
+                ? currentChoices.filter(id => id !== choiceId)
+                : [...currentChoices, choiceId];
+            setAnswers(prev => ({...prev, [questionId]: newChoices}));
+        } else {
+            setAnswers(prev => ({...prev, [questionId]: [choiceId]}));
+        }
     };
 
     const handleFinish = () => {
@@ -56,11 +68,10 @@ export function QuizPlayer({quiz}: QuizPlayerProps) {
             toast.error("Usuário não identificado. Faça login para salvar seu resultado.");
             return;
         }
-        const finalAnswers: UserAnswer[] = Object.entries(answers).map(([questionId, choiceId]) => ({
+        const finalAnswers: UserAnswer[] = Object.entries(answers).map(([questionId, choiceIds]) => ({
             questionId,
-            choiceId
+            choiceIds
         }));
-
         const requestPayload: ResultRequest = {
             quizId: quiz.id,
             userEmail,
@@ -77,15 +88,31 @@ export function QuizPlayer({quiz}: QuizPlayerProps) {
                     <CardTitle className="text-2xl">{currentQuestion.text}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                    {currentQuestion.isMultipleChoice && (
+                        <p className="text-sm text-center text-muted-foreground p-2 bg-secondary rounded-md">
+                            Esta pergunta permite múltiplas respostas. Selecione todas as corretas.
+                        </p>
+                    )}
                     {currentQuestion.choices.map(choice => (
-                        <Button
+                        <div
                             key={choice.id}
-                            variant={answers[currentQuestion.id] === choice.id ? 'default' : 'outline'}
-                            className="w-full h-auto text-wrap p-4 justify-start"
+                            className="flex items-center space-x-3 p-4 border rounded-md has-[:checked]:border-primary has-[:checked]:bg-muted cursor-pointer"
                             onClick={() => handleSelectChoice(choice.id)}
                         >
-                            {choice.text}
-                        </Button>
+                            {currentQuestion.isMultipleChoice ? (
+                                <Checkbox
+                                    id={choice.id}
+                                    checked={answers[currentQuestion.id]?.includes(choice.id)}
+                                />
+                            ) : (
+                                <RadioGroup value={answers[currentQuestion.id]?.[0]}>
+                                    <RadioGroupItem value={choice.id} id={choice.id}/>
+                                </RadioGroup>
+                            )}
+                            <label htmlFor={choice.id} className="font-medium flex-1 cursor-pointer">
+                                {choice.text}
+                            </label>
+                        </div>
                     ))}
                 </CardContent>
             </Card>

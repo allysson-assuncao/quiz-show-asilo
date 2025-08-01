@@ -6,6 +6,7 @@ import org.example.backend.dto.Question.QuestionForTakingDTO;
 import org.example.backend.dto.Quiz.QuizForTakingDTO;
 import org.example.backend.dto.Quiz.QuizRequestDTO;
 import org.example.backend.dto.Quiz.SimpleQuizDTO;
+import org.example.backend.model.Choice;
 import org.example.backend.model.Question;
 import org.example.backend.model.Quiz;
 import org.example.backend.repository.QuestionRepository;
@@ -59,13 +60,19 @@ public class QuizService {
                 .orElseThrow(() -> new EntityNotFoundException("Quiz não encontrado com o ID: " + quizId));
 
         List<QuestionForTakingDTO> questionDTOs = quiz.getQuestions().stream()
-                .map(question -> new QuestionForTakingDTO(
-                        question.getId(),
-                        question.getText(),
-                        question.getChoices().stream()
-                                .map(choice -> new ChoiceDTO(choice.getId(), choice.getText()))
-                                .toList()
-                ))
+                .map(question -> {
+                    long correctChoicesCount = question.getChoices().stream().filter(Choice::isCorrect).count();
+                    boolean isMultiple = correctChoicesCount > 1;
+
+                    return new QuestionForTakingDTO(
+                            question.getId(),
+                            question.getText(),
+                            isMultiple,
+                            question.getChoices().stream()
+                                    .map(choice -> new ChoiceDTO(choice.getId(), choice.getText()))
+                                    .toList()
+                    );
+                })
                 .toList();
 
         return new QuizForTakingDTO(quiz.getId(), quiz.getTitle(), questionDTOs);

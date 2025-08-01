@@ -14,8 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,26 +41,64 @@ public class ResultService {
         User user = this.userRepository.findByEmail(dto.userEmail())
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado."));
 
-        Map<UUID, UUID> correctAnswersMap = quiz.getQuestions().stream()
+        Map<UUID, Set<UUID>> correctAnswersMap = quiz.getQuestions().stream()
                 .collect(Collectors.toMap(
                         Question::getId,
                         question -> question.getChoices().stream()
                                 .filter(Choice::isCorrect)
-                                .findFirst()
                                 .map(Choice::getId)
-                                .orElseThrow(() -> new IllegalStateException("Pergunta sem resposta correta: " + question.getId()))
+                                .collect(Collectors.toSet())
                 ));
 
+        int totalQuestions = quiz.getQuestions().size();
+        double totalScore = 0.0;
         int correctAnswersCount = 0;
-        for (UserAnswerDTO userAnswer : dto.answers()) {
-            UUID correctChoiceId = correctAnswersMap.get(userAnswer.questionId());
-            if (correctChoiceId != null && correctChoiceId.equals(userAnswer.choiceId())) {
-                correctAnswersCount++;
+        int wrongAnswersCount = 0;
+
+        // Para facilitar a busca das respostas do usuário por questão
+        Map<UUID, Set<UUID>> userAnswersMap = dto.answers().stream()
+                .collect(Collectors.toMap(
+                        UserAnswerDTO::questionId,
+                        ua -> new HashSet<>(ua.choiceIds())
+                ));
+
+        for (Question question : quiz.getQuestions()) {
+            Set<UUID> correctChoiceIds = correctAnswersMap.getOrDefault(question.getId(), Collections.emptySet());
+            Set<UUID> userChoiceIds = userAnswersMap.getOrDefault(question.getId(), Collections.emptySet());
+
+            if (correctChoiceIds.isEmpty()) {
+                // Questão sem alternativas corretas, ignora
+                continue;
+            }
+
+            // Pontuação da questão (cada questão vale 1 ponto)
+            double questionScore = 0.0;
+
+            // Conta quantas alternativas corretas o usuário marcou
+            long correctMarked = userChoiceIds.stream().filter(correctChoiceIds::contains).count();
+
+            // Conta quantas alternativas incorretas o usuário marcou
+            long incorrectMarked = userChoiceIds.stream().filter(id -> !correctChoiceIds.contains(id)).count();
+
+            // Se o usuário marcou alternativas incorretas, a questão é considerada errada (pode-se ajustar essa regra)
+            if (incorrectMarked > 0) {
+                wrongAnswersCount++;
+                // Não soma pontos para essa questão
+            } else {
+                // Soma pontos proporcionais às corretas marcadas
+                questionScore = ((double) correctMarked) / correctChoiceIds.size();
+                totalScore += questionScore;
+                // Considera correta se marcou todas as corretas e nenhuma errada
+                if (correctMarked == correctChoiceIds.size()) {
+                    correctAnswersCount++;
+                } else {
+                    wrongAnswersCount++;
+                }
             }
         }
 
-        int totalQuestions = quiz.getQuestions().size();
-        double score = totalQuestions > 0 ? ((double) correctAnswersCount / totalQuestions) * 100 : 0;
+        // Normaliza a pontuação para 0-100
+        double score = totalQuestions > 0 ? (totalScore / totalQuestions) * 100 : 0;
 
         Result newResult = new Result();
         newResult.setQuiz(quiz);
@@ -76,7 +113,7 @@ public class ResultService {
                 savedResult.getId(),
                 totalQuestions,
                 correctAnswersCount,
-                totalQuestions - correctAnswersCount,
+                wrongAnswersCount,
                 score
         );
     }
