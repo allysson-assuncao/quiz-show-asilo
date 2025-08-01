@@ -4,6 +4,7 @@ import org.example.backend.dto.Quiz.QuizMetricsDTO;
 import org.example.backend.model.Result;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -40,4 +41,7 @@ public interface ResultRepository extends JpaRepository<Result, Long> {
             nativeQuery = true)
     Page<Map<String, Object>> findQuizRanking(@Param("quizId") UUID quizId, Pageable pageable);
 
+    @Modifying
+    @Query("DELETE FROM Result r WHERE r.quiz.id = :quizId")
+    void deleteByQuizId(@Param("quizId") UUID quizId);
 }

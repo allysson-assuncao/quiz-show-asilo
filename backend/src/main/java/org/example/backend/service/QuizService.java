@@ -1,56 +1,91 @@
 package org.example.backend.service;
 
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.example.backend.dto.Choice.ChoiceDTO;
 import org.example.backend.dto.Question.QuestionForTakingDTO;
-import org.example.backend.dto.Quiz.QuizForTakingDTO;
-import org.example.backend.dto.Quiz.QuizRequestDTO;
-import org.example.backend.dto.Quiz.SimpleQuizDTO;
+import org.example.backend.dto.Question.SimpleQuestionDTO;
+import org.example.backend.dto.Quiz.*;
 import org.example.backend.model.Question;
 import org.example.backend.model.Quiz;
 import org.example.backend.repository.QuestionRepository;
 import org.example.backend.repository.QuizRepository;
+import org.example.backend.repository.ResultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class QuizService {
 
     private final QuizRepository quizRepository;
     private final QuestionRepository questionRepository;
+    private final ResultRepository resultRepository;
 
     @Autowired
-    public QuizService(QuizRepository quizRepository, QuestionRepository questionRepository) {
+    public QuizService(QuizRepository quizRepository, QuestionRepository questionRepository, ResultRepository resultRepository) {
         this.quizRepository = quizRepository;
         this.questionRepository = questionRepository;
+        this.resultRepository = resultRepository;
     }
 
     @Transactional
     public Quiz createQuiz(QuizRequestDTO dto) {
         this.quizRepository.findByTitle(dto.title()).ifPresent(q -> {
-            throw new IllegalArgumentException("Já existe um quiz com o título: " + dto.title());
+            throw new EntityExistsException("Já existe um quiz com o título: " + dto.title());
         });
 
-        List<Question> foundQuestions = this.questionRepository.findAllById(dto.questionIds());
-        if (foundQuestions.size() != dto.questionIds().size()) {
-            throw new EntityNotFoundException("Uma ou mais perguntas não foram encontradas.");
-        }
+        Set<Question> foundQuestions = findQuestionsByIds(dto.questionIds());
 
         Quiz newQuiz = new Quiz();
         newQuiz.setTitle(dto.title());
         newQuiz.setDescription(dto.description());
-        newQuiz.setQuestions(new HashSet<>(foundQuestions));
+        newQuiz.setQuestions(foundQuestions);
 
         return this.quizRepository.save(newQuiz);
     }
 
+    @Transactional(readOnly = true)
     public List<SimpleQuizDTO> getAllSimpleQuizzes() {
         return this.quizRepository.findAllSimple();
+    }
+
+    @Transactional(readOnly = true)
+    public QuizDetailDTO getQuizDetailsById(UUID quizId) {
+        return quizRepository.findById(quizId)
+                .map(this::mapToQuizDetailDTO)
+                .orElseThrow(() -> new EntityNotFoundException("Quiz não encontrado com o ID: " + quizId));
+    }
+
+    @Transactional
+    public Quiz updateQuiz(UUID quizId, QuizUpdateDTO dto) {
+        if (quizRepository.existsByTitleAndIdNot(dto.title(), quizId)) {
+            throw new EntityExistsException("O título '" + dto.title() + "' já está em uso por outro quiz.");
+        }
+
+        Quiz quizToUpdate = quizRepository.findById(quizId)
+                .orElseThrow(() -> new EntityNotFoundException("Quiz não encontrado com o ID: " + quizId));
+
+        Set<Question> foundQuestions = findQuestionsByIds(dto.questionIds());
+
+        quizToUpdate.setTitle(dto.title());
+        quizToUpdate.setDescription(dto.description());
+        quizToUpdate.setQuestions(foundQuestions);
+
+        return quizRepository.save(quizToUpdate);
+    }
+
+    @Transactional
+    public void deleteQuiz(UUID quizId) {
+        if (!quizRepository.existsById(quizId)) {
+            throw new EntityNotFoundException("Quiz não encontrado com o ID: " + quizId);
+        }
+        // Primeiro, deleta os resultados associados para evitar erros de restrição
+        resultRepository.deleteByQuizId(quizId);
+        quizRepository.deleteById(quizId);
     }
 
     @Transactional(readOnly = true)
@@ -58,17 +93,46 @@ public class QuizService {
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new EntityNotFoundException("Quiz não encontrado com o ID: " + quizId));
 
-        List<QuestionForTakingDTO> questionDTOs = quiz.getQuestions().stream()
-                .map(question -> new QuestionForTakingDTO(
-                        question.getId(),
-                        question.getText(),
-                        question.getChoices().stream()
-                                .map(choice -> new ChoiceDTO(choice.getId(), choice.getText()))
-                                .toList()
-                ))
-                .toList();
+        List<QuestionForTakingDTO> questionDTOs = new ArrayList<>(quiz.getQuestions()).stream()
+                .map(question -> {
+                    List<ChoiceDTO> shuffledChoices = new ArrayList<>(question.getChoices()).stream()
+                            .map(choice -> new ChoiceDTO(choice.getId(), choice.getText()))
+                            .collect(Collectors.toList());
+                    Collections.shuffle(shuffledChoices); // Embaralha as alternativas
+
+                    return new QuestionForTakingDTO(
+                            question.getId(),
+                            question.getText(),
+                            shuffledChoices
+                    );
+                })
+                .collect(Collectors.toList());
+
+        Collections.shuffle(questionDTOs); // Embaralha as perguntas
 
         return new QuizForTakingDTO(quiz.getId(), quiz.getTitle(), questionDTOs);
     }
 
+    // --- Métodos Auxiliares ---
+
+    private Set<Question> findQuestionsByIds(Set<UUID> questionIds) {
+        Set<Question> foundQuestions = new HashSet<>(this.questionRepository.findAllById(questionIds));
+        if (foundQuestions.size() != questionIds.size()) {
+            throw new EntityNotFoundException("Uma ou mais perguntas não foram encontradas.");
+        }
+        return foundQuestions;
+    }
+
+    private QuizDetailDTO mapToQuizDetailDTO(Quiz quiz) {
+        List<SimpleQuestionDTO> questionDTOs = quiz.getQuestions().stream()
+                .map(q -> new SimpleQuestionDTO(q.getId(), q.getText()))
+                .collect(Collectors.toList());
+
+        return new QuizDetailDTO(
+                quiz.getId(),
+                quiz.getTitle(),
+                quiz.getDescription(),
+                questionDTOs
+        );
+    }
 }
