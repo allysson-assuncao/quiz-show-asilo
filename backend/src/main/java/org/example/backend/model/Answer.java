@@ -21,6 +21,9 @@ public class Answer {
     @Column(name = "id", nullable = false, updatable = false, unique = true)
     private long id;
 
+    @Column(name = "is_correct", nullable = false)
+    private boolean isCorrect;
+
     @JoinColumn(name = "question_id")
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
