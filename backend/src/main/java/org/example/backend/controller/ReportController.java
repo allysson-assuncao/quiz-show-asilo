@@ -1,5 +1,6 @@
 package org.example.backend.controller;
 
+import org.example.backend.dto.Question.MostFailedQuestionsDTO;
 import org.example.backend.dto.Quiz.QuizMetricsDTO;
 import org.example.backend.dto.Quiz.QuizRankingEntryDTO;
 import org.example.backend.service.ReportService;
@@ -11,6 +12,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -35,6 +37,11 @@ public class ReportController {
             @PathVariable UUID quizId,
             @PageableDefault(size = 10, sort = "score", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok(this.reportService.getQuizRanking(quizId, pageable));
+    }
+
+    @GetMapping("/quizzes/{quizId}/most-failed-questions")
+    public ResponseEntity<List<MostFailedQuestionsDTO>> getMostFailedQuestions(@PathVariable UUID quizId) {
+        return ResponseEntity.ok(reportService.getMostFailedQuestions(quizId));
     }
 
 }

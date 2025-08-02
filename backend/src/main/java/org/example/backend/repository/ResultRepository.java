@@ -1,5 +1,6 @@
 package org.example.backend.repository;
 
+import org.example.backend.dto.Question.MostFailedQuestionsDTO;
 import org.example.backend.dto.Quiz.QuizMetricsDTO;
 import org.example.backend.model.Result;
 import org.springframework.data.domain.Page;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -39,5 +41,14 @@ public interface ResultRepository extends JpaRepository<Result, Long> {
             countQuery = "SELECT COUNT(*) FROM result WHERE quiz_id = :quizId",
             nativeQuery = true)
     Page<Map<String, Object>> findQuizRanking(@Param("quizId") UUID quizId, Pageable pageable);
+
+    @Query("""
+                SELECT new org.example.backend.dto.Question.MostFailedQuestionsDTO(a.question.text, COUNT(a.id))
+                FROM Answer a
+                WHERE a.result.quiz.id = :quizId AND a.isCorrect = false
+                GROUP BY a.question.text
+                ORDER BY COUNT(a.id) DESC
+            """)
+    List<MostFailedQuestionsDTO> findMostFailedQuestions(@Param("quizId") UUID quizId, Pageable pageable);
 
 }

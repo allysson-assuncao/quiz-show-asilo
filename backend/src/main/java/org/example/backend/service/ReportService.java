@@ -1,11 +1,13 @@
 package org.example.backend.service;
 
+import org.example.backend.dto.Question.MostFailedQuestionsDTO;
 import org.example.backend.dto.Quiz.QuizMetricsDTO;
 import org.example.backend.dto.Quiz.QuizRankingEntryDTO;
 import org.example.backend.repository.ResultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -53,6 +55,10 @@ public class ReportService {
             }
         }
         return new QuizRankingEntryDTO(rank, userName, score, completedAt);
+    }
+
+    public List<MostFailedQuestionsDTO> getMostFailedQuestions(UUID quizId) {
+        return this.resultRepository.findMostFailedQuestions(quizId, PageRequest.of(0, 3));
     }
 
 }
