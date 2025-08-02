@@ -91,6 +91,7 @@ public interface ResultRepository extends JpaRepository<Result, Long> {
             JOIN r.user u
             WHERE r.quiz.id = :quizId
             ORDER BY r.score DESC, r.createdAt ASC
+            LIMIT 1
             """)
     String getTopScorerProfilePicturePath(@Param("quizId") UUID quizId);
 
