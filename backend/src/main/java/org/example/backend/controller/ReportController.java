@@ -33,8 +33,8 @@ public class ReportController {
         return ResponseEntity.ok(reportService.getQuizMetrics(quizId));
     }
 
-    @GetMapping("/user-quiz-answer-counts")
-    public ResponseEntity<List<UserQuizAnswerCountDTO>> getUserQuizAnswerCounts() {
+    @GetMapping("/user-activity")
+    public ResponseEntity<List<UserQuizAnswerCountDTO>> getUserActivity() {
         return ResponseEntity.ok(reportService.getUserQuizAnswerCounts());
     }
 

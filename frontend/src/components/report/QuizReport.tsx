@@ -6,6 +6,8 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {QuizReportMetricsDisplay} from "@/components/report/QuizReportMetricsDisplay";
 import {QuizReportRank} from "@/components/report/QuizReportRank";
 import {MostFailedQuestions} from "@/components/report/MostFailedQuestions";
+import {Separator} from "@/components/ui/separator";
+import {UserActivityReport} from "@/components/report/UserActivityReport";
 
 export default function QuizReport() {
     const [selectedQuizId, setSelectedQuizId] = useState<string>('');
@@ -48,6 +50,9 @@ export default function QuizReport() {
                     <p>Por favor, selecione um quiz para ver o relatório.</p>
                 </div>
             )}
+            <Separator className="my-12" />
+
+            <UserActivityReport />
         </div>
     );
 }

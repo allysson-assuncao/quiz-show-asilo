@@ -76,6 +76,12 @@ export interface MostFailedQuestion {
     errorCount: number;
 }
 
+export interface UserQuizAnswerCount {
+    userName: string;
+    quizTitle: string;
+    totalAnswers: number;
+}
+
 export interface PagedResponse<T> {
     content: T[];
     pageable: {
