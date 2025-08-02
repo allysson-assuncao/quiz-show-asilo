@@ -11,6 +11,7 @@ import org.example.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
@@ -20,12 +21,14 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
+    private final FileStorageService fileStorageService;
 
     @Autowired
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenService tokenService) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenService tokenService, FileStorageService fileStorageService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenService = tokenService;
+        this.fileStorageService = fileStorageService;
     }
 
     public Optional<AuthResponseDTO> login(UserLoginDTO userLoginDTO) {
@@ -41,11 +44,14 @@ public class AuthService {
         return Optional.empty();
     }
 
-    public Optional<AuthResponseDTO> register(UserRegisterDTO userRegisterDTO) {
-        Optional<User> user = this.userRepository.findByEmail(userRegisterDTO.email());
+    public AuthResponseDTO register(UserRegisterDTO userRegisterDTO, MultipartFile profilePicture) {
+        if (this.userRepository.findByEmail(userRegisterDTO.email()).isPresent()) {
+            throw new EntityExistsException("Usuário com email '" + userRegisterDTO.email() + "' já está cadastrado");
+        }
 
-        if (user.isPresent()) {
-            throw new EntityExistsException("Usuário com email '" + userRegisterDTO.email() + "' já esta cadastrado");
+        String profilePicturePath = null;
+        if (profilePicture != null && !profilePicture.isEmpty()) {
+            profilePicturePath = this.fileStorageService.storeFile(profilePicture);
         }
 
         User newUser = User.builder()
@@ -54,16 +60,17 @@ public class AuthService {
                 .password(passwordEncoder.encode(userRegisterDTO.password()))
                 .name(userRegisterDTO.name())
                 .role(userRegisterDTO.role())
+                .profilePicturePath(profilePicturePath)
                 .build();
 
         this.userRepository.save(newUser);
 
         String token = this.tokenService.generateToken(newUser);
-        return Optional.of(AuthResponseDTO.builder()
-                    .username(userRegisterDTO.email())
-                    .email(newUser.getEmail())
-                    .role(newUser.getRole())
-                    .token(token).build());
+        return AuthResponseDTO.builder()
+                .username(newUser.getUsername())
+                .email(newUser.getEmail())
+                .role(newUser.getRole())
+                .token(token).build();
     }
 
 }

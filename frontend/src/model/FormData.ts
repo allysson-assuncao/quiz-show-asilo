@@ -9,22 +9,23 @@ export interface RegisterFormData {
     password: string;
     name: string;
     role: string;
+    profilePicture: string;
 }
 
 export interface QuizFormData {
-  title: string;
-  description?: string;
-  questionIds: string[];
+    title: string;
+    description?: string;
+    questionIds: string[];
 }
 
 export interface ChoiceFormData {
-  text: string;
-  isCorrect: boolean;
+    text: string;
+    isCorrect: boolean;
 }
 
 export interface QuestionFormData {
-  text:string;
-  choices: ChoiceFormData[];
+    text: string;
+    choices: ChoiceFormData[];
 }
 
 export interface DeleteQuestionFormData {

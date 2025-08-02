@@ -11,7 +11,6 @@ import {Input} from '@/components/ui/input'
 import Link from 'next/link'
 import {AxiosError} from 'axios'
 import {useRouter} from 'next/navigation'
-import {RegisterFormData} from '@/model/FormData'
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from '@/components/ui/form'
 import * as React from 'react'
 import {toast} from "sonner"
@@ -27,11 +26,15 @@ import {
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select";
+import {RegisterFormData} from "@/model/FormData";
+import Image from "next/image";
 
 const RegisterForm = () => {
     const router = useRouter();
     const dispatch = useDispatch();
     const [selectedRole, setSelectedRole] = useState<string>('');
+    const [selectedImage, setSelectedImage] = useState<File | null>(null);
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
     const form = useForm<RegisterFormData>({
         resolver: zodResolver(registerSchema),
@@ -80,7 +83,23 @@ const RegisterForm = () => {
     })
 
     const onSubmit = (data: RegisterFormData) => {
-        mutation.mutate(data);
+        const formData = new FormData();
+        const userDtoBlob = new Blob([JSON.stringify(data)], {
+            type: 'application/json'
+        });
+        formData.append('user', userDtoBlob);
+        if (selectedImage) {
+            formData.append('image', selectedImage);
+        }
+        mutation.mutate(formData);
+    }
+
+    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0]
+        if (file) {
+            setSelectedImage(file)
+            setAvatarPreview(URL.createObjectURL(file))
+        }
     }
 
     return (
@@ -104,6 +123,46 @@ const RegisterForm = () => {
                                             <FormLabel>Nome Completo</FormLabel>
                                             <FormControl>
                                                 <Input placeholder="Fulano da Silva..." {...field} />
+                                            </FormControl>
+                                            <FormMessage/>
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="profilePicture"
+                                    render={() => (
+                                        <FormItem>
+                                            <FormLabel>Avatar</FormLabel>
+                                            <FormControl>
+                                                <div>
+                                                    <div
+                                                        className="relative w-24 h-24 rounded-full overflow-hidden cursor-pointer">
+                                                        {avatarPreview ? (
+                                                            <Image
+                                                                src={avatarPreview}
+                                                                alt="Avatar preview"
+                                                                layout="fill"
+                                                                objectFit="cover"
+                                                                onClick={() => document.getElementById('avatar-input')?.click()}
+                                                            />
+                                                        ) : (
+                                                            <div
+                                                                className="w-full h-full bg-gray-200 flex items-center justify-center"
+                                                                onClick={() => document.getElementById('avatar-input')?.click()}
+                                                            >
+                                                                <span>Upload</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <input
+                                                        id="avatar-input"
+                                                        type="file"
+                                                        accept="image/*"
+                                                        className="hidden"
+                                                        onChange={handleImageChange}
+                                                    />
+                                                </div>
                                             </FormControl>
                                             <FormMessage/>
                                         </FormItem>

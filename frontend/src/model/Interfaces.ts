@@ -19,6 +19,7 @@ export interface Choice {
 export interface QuestionForTaking {
     id: string;
     text: string;
+    isMultipleChoice: boolean;
     choices: Choice[];
 }
 
@@ -37,7 +38,7 @@ export interface SimpleQuiz {
 
 export interface UserAnswer {
     questionId: string;
-    choiceId: string;
+    choiceIds: string[];
 }
 
 export interface ResultRequest {
@@ -67,6 +68,18 @@ export interface QuizMetrics {
     averageScore: number;
     totalAttempts: number;
     distinctParticipants: number;
+    maxCorrectAnswers: number;
+}
+
+export interface MostFailedQuestion {
+    questionText: string;
+    errorCount: number;
+}
+
+export interface UserQuizAnswerCount {
+    userName: string;
+    quizTitle: string;
+    totalAnswers: number;
 }
 
 export interface PagedResponse<T> {

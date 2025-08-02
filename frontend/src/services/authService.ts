@@ -1,5 +1,5 @@
 import { auth } from '@/services/index'
-import {LoginFormData, RegisterFormData} from '@/model/FormData'
+import {LoginFormData} from '@/model/FormData'
 
 export const loginRequest = async (data: LoginFormData) => {
     const response = await auth.post('/login', data, {});
@@ -7,7 +7,7 @@ export const loginRequest = async (data: LoginFormData) => {
     return response.data;
 }
 
-export const registerRequest = async (data: RegisterFormData) => {
+export const registerRequest = async (data: FormData) => {
     const response = await auth.post('/register', data, {});
     return response.data;
 }

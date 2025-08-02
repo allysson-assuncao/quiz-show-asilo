@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 import java.util.Optional;
@@ -33,10 +34,13 @@ public class AuthController {
                 ResponseEntity.badRequest().body(Map.of("message", "Credenciais inválidas!"));
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<AuthResponseDTO> register(@RequestBody @Valid UserRegisterDTO userRegisterDTO) {
-        Optional<AuthResponseDTO> optionalAuthResponseDTO = this.authService.register(userRegisterDTO);
-        return optionalAuthResponseDTO.map(authResponseDTO -> ResponseEntity.status(HttpStatus.CREATED).body(authResponseDTO)).orElseGet(() -> ResponseEntity.badRequest().build());
+    @PostMapping(value = "/register", consumes = {"multipart/form-data"})
+    public ResponseEntity<AuthResponseDTO> register(
+            @RequestPart("user") @Valid UserRegisterDTO userRegisterDTO,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+
+        AuthResponseDTO authResponseDTO = this.authService.register(userRegisterDTO, image);
+        return ResponseEntity.status(HttpStatus.CREATED).body(authResponseDTO);
     }
 
 }

@@ -4,4 +4,5 @@ export interface AuthState {
     token: string | null;
     role: string;
     isAuthenticated: boolean;
+    profilePicturePath: string | null;
 }

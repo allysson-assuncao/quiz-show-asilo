@@ -1,8 +1,9 @@
 import {useQuery} from "react-query";
-import {fetchQuizMetrics} from "@/services/reportService";
-import {BarChart, Target, Trophy, Users} from "lucide-react";
+import {fetchQuizMetrics, fetchTopScorerProfilePicturePath} from "@/services/reportService";
+import {BarChart, CheckSquare, Target, Trophy, Users} from "lucide-react";
 import {Skeleton} from "@/components/ui/skeleton";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 
 export function QuizReportMetricsDisplay({quizId}: { quizId: string }) {
     const {data: metrics, isLoading} = useQuery({
@@ -11,12 +12,23 @@ export function QuizReportMetricsDisplay({quizId}: { quizId: string }) {
         enabled: !!quizId,
     });
 
+    const {data: topScorerImgPath, isLoading: isLoadingImg} = useQuery({
+        queryKey: ['topScorerPicture', quizId],
+        queryFn: () => fetchTopScorerProfilePicturePath(quizId),
+        enabled: !!quizId,
+    });
+
+    const formatImageUrl = (path: string | null | undefined) => {
+        if (!path) return '';
+        return `http://localhost:8081/Pictures/images/${path}`;
+    };
+
     const metricCards = [
         {
-            title: "Melhor Pontuação",
-            value: `${metrics?.topScore?.toFixed(1) ?? 'N/A'}%`,
-            subtext: `por ${metrics?.topScorerName ?? '...'}`,
-            icon: <Trophy className="h-4 w-4 text-muted-foreground"/>
+            title: "Máximo de Acertos",
+            value: metrics?.maxCorrectAnswers ?? '...',
+            subtext: 'em uma única tentativa',
+            icon: <CheckSquare className="h-4 w-4 text-muted-foreground"/>
         },
         {
             title: "Média de Pontuação",
@@ -38,13 +50,29 @@ export function QuizReportMetricsDisplay({quizId}: { quizId: string }) {
     if (isLoading) {
         return (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                {Array.from({length: 4}).map((_, i) => <Skeleton key={i} className="h-32"/>)}
+                {Array.from({length: 5}).map((_, i) => <Skeleton key={i} className="h-32"/>)}
             </div>
         );
     }
 
     return (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Melhor Pontuação</CardTitle>
+                    <Trophy className="h-4 w-4 text-muted-foreground"/>
+                </CardHeader>
+                <CardContent className="flex items-center gap-4">
+                    <Avatar>
+                        <AvatarImage src={formatImageUrl(topScorerImgPath)} alt={metrics?.topScorerName}/>
+                        <AvatarFallback>{metrics?.topScorerName?.charAt(0) ?? '?'}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                        <div className="text-2xl font-bold">{`${metrics?.topScore?.toFixed(1) ?? 'N/A'}%`}</div>
+                        <p className="text-xs text-muted-foreground">por {metrics?.topScorerName ?? '...'}</p>
+                    </div>
+                </CardContent>
+            </Card>
             {metricCards.map(card => (
                 <Card key={card.title}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
