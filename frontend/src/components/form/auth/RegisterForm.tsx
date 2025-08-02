@@ -11,7 +11,6 @@ import {Input} from '@/components/ui/input'
 import Link from 'next/link'
 import {AxiosError} from 'axios'
 import {useRouter} from 'next/navigation'
-import {RegisterFormData} from '@/model/FormData'
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from '@/components/ui/form'
 import * as React from 'react'
 import {toast} from "sonner"
@@ -27,6 +26,7 @@ import {
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select";
+import {RegisterFormData} from "@/model/FormData";
 
 const RegisterForm = () => {
     const router = useRouter();
@@ -41,6 +41,7 @@ const RegisterForm = () => {
             password: 'Senha123#',
             name: '',
             role: '',
+            profilePicture: '',
         },
         mode: 'onBlur',
     })
@@ -104,6 +105,26 @@ const RegisterForm = () => {
                                             <FormLabel>Nome Completo</FormLabel>
                                             <FormControl>
                                                 <Input placeholder="Fulano da Silva..." {...field} />
+                                            </FormControl>
+                                            <FormMessage/>
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="profilePicture"
+                                    render={({field: {onChange, ...rest}}) => (
+                                        <FormItem>
+                                            <FormLabel>Foto de Perfil (Opcional)</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    type="file"
+                                                    accept="image/png, image/jpeg"
+                                                    {...rest}
+                                                    onChange={(e) => {
+                                                        onChange(e.target.files);
+                                                    }}
+                                                />
                                             </FormControl>
                                             <FormMessage/>
                                         </FormItem>

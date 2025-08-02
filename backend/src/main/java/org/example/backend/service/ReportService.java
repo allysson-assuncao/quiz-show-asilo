@@ -90,4 +90,7 @@ public class ReportService {
         return this.resultRepository.findMostFailedQuestions(quizId, PageRequest.of(0, 3));
     }
 
+    public String getTopScorerProfilePicturePath(UUID quizId) {
+        return this.resultRepository.getTopScorerProfilePicturePath(quizId);
+    }
 }

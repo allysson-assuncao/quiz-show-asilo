@@ -9,6 +9,7 @@ export interface RegisterFormData {
     password: string;
     name: string;
     role: string;
+    profilePicture: string;
 }
 
 export interface QuizFormData {

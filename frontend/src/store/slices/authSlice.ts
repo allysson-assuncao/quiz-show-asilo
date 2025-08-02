@@ -11,6 +11,7 @@ const initialState: AuthState = {
     token: tokenFromStorage,
     role: roleFromStorage,
     isAuthenticated: !!tokenFromStorage,
+    profilePicturePath: null,
 };
 
 export const authSlice = createSlice({
@@ -50,7 +51,10 @@ export const authSlice = createSlice({
             localStorage.removeItem('email');
             localStorage.removeItem("profile");
         },
+        setProfilePicture: (state, action: PayloadAction<string | null>) => {
+            state.profilePicturePath = action.payload;
+        },
     },
 });
 
-export const { login, signup, logout } = authSlice.actions;
+export const {login, signup, logout, setProfilePicture} = authSlice.actions;

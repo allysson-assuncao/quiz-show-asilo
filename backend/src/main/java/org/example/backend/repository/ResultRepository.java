@@ -51,16 +51,16 @@ public interface ResultRepository extends JpaRepository<Result, Long> {
     List<Long> findMaxCorrectAnswersInResult(@Param("quizId") UUID quizId, Pageable pageable);
 
     @Query("""
-        SELECT new org.example.backend.dto.Quiz.UserQuizAnswerCountDTO(
-            u.name, q.title, COUNT(a.id)
-        )
-        FROM Answer a
-        JOIN a.result r
-        JOIN r.user u
-        JOIN r.quiz q
-        GROUP BY u.name, q.title
-        ORDER BY COUNT(a.id) DESC
-    """)
+                SELECT new org.example.backend.dto.Quiz.UserQuizAnswerCountDTO(
+                    u.name, q.title, COUNT(a.id)
+                )
+                FROM Answer a
+                JOIN a.result r
+                JOIN r.user u
+                JOIN r.quiz q
+                GROUP BY u.name, q.title
+                ORDER BY COUNT(a.id) DESC
+            """)
     List<UserQuizAnswerCountDTO> findUserQuizAnswerCounts();
 
     @Query(value = """
@@ -84,5 +84,14 @@ public interface ResultRepository extends JpaRepository<Result, Long> {
                 ORDER BY COUNT(a.id) DESC
             """)
     List<MostFailedQuestionsDTO> findMostFailedQuestions(@Param("quizId") UUID quizId, Pageable pageable);
+
+    @Query("""
+            SELECT u.profilePicturePath
+            FROM Result r
+            JOIN r.user u
+            WHERE r.quiz.id = :quizId
+            ORDER BY r.score DESC, r.createdAt ASC
+            """)
+    String getTopScorerProfilePicturePath(@Param("quizId") UUID quizId);
 
 }

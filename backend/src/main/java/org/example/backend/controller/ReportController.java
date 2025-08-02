@@ -30,12 +30,12 @@ public class ReportController {
 
     @GetMapping("/quizzes/{quizId}/metrics")
     public ResponseEntity<QuizMetricsDTO> getQuizMetrics(@PathVariable UUID quizId) {
-        return ResponseEntity.ok(reportService.getQuizMetrics(quizId));
+        return ResponseEntity.ok(this.reportService.getQuizMetrics(quizId));
     }
 
     @GetMapping("/user-activity")
     public ResponseEntity<List<UserQuizAnswerCountDTO>> getUserActivity() {
-        return ResponseEntity.ok(reportService.getUserQuizAnswerCounts());
+        return ResponseEntity.ok(this.reportService.getUserQuizAnswerCounts());
     }
 
     @GetMapping("/quizzes/{quizId}/ranking")
@@ -47,7 +47,13 @@ public class ReportController {
 
     @GetMapping("/quizzes/{quizId}/most-failed-questions")
     public ResponseEntity<List<MostFailedQuestionsDTO>> getMostFailedQuestions(@PathVariable UUID quizId) {
-        return ResponseEntity.ok(reportService.getMostFailedQuestions(quizId));
+        return ResponseEntity.ok(this.reportService.getMostFailedQuestions(quizId));
+    }
+
+    @GetMapping("/quizzes/{quizId}/top-scorer-picture-path")
+    public ResponseEntity<String> getTopScorerProfilePicturePath(@PathVariable UUID quizId) {
+        String path = this.reportService.getTopScorerProfilePicturePath(quizId);
+        return ResponseEntity.ok(path);
     }
 
 }
