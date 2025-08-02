@@ -17,7 +17,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/profile-picture-path")
+    @GetMapping("/profile-picture-path")
     public ResponseEntity<String> getProfilePicturePathByEmail(@RequestParam String email) {
         String path = userService.getProfilePicturePathByEmail(email);
         return ResponseEntity.ok(path);

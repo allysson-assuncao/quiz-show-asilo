@@ -43,3 +43,13 @@ export const fetchUserActivity = async (): Promise<UserQuizAnswerCount[]> => {
     });
     return data;
 };
+
+export const fetchTopScorerProfilePicturePath = async (quizId: string): Promise<string | null> => {
+    const response = await report.get<string>(`/quizzes/${quizId}/top-scorer-picture-path`, {
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        responseType: 'text',
+    });
+    return response.data;
+};

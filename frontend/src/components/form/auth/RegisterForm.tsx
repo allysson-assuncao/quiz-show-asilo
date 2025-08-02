@@ -35,8 +35,8 @@ const RegisterForm = () => {
     const router = useRouter();
     const dispatch = useDispatch();
     const [selectedRole, setSelectedRole] = useState<string>('');
-    const [selectedImage, setSelectedImage] = useState<File | null>(null)
-    const [avatarPreview, setAvatarPreview] = useState<string | null>(profilePicture || null)
+    const [selectedImage, setSelectedImage] = useState<File | null>(null);
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
     const form = useForm<RegisterFormData>({
         resolver: zodResolver(registerSchema),
@@ -46,7 +46,6 @@ const RegisterForm = () => {
             password: 'Senha123#',
             name: '',
             role: '',
-            profilePicture: '',
         },
         mode: 'onBlur',
     })
@@ -86,12 +85,15 @@ const RegisterForm = () => {
     })
 
     const onSubmit = (data: RegisterFormData) => {
-        const formData = new FormData()
-        formData.append('user', JSON.stringify(data))
+        const formData = new FormData();
+        const userDtoBlob = new Blob([JSON.stringify(data)], {
+            type: 'application/json'
+        });
+        formData.append('user', userDtoBlob);
         if (selectedImage) {
-            formData.append('image', selectedImage)
+            formData.append('image', selectedImage);
         }
-        mutation.mutate(formData)
+        mutation.mutate(formData);
     }
 
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {

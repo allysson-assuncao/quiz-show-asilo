@@ -22,6 +22,8 @@ import {NavMain} from "@/components/sidebar/nav/nav-main";
 import {NavAbout} from "@/components/sidebar/nav/nav-about";
 import {NavSecondary} from "@/components/sidebar/nav/nav-secondary";
 import {NavUser} from "@/components/sidebar/nav/nav-user";
+import {RootState} from "@/store";
+import {useSelector} from "react-redux";
 
 const data = {
     user: {
@@ -111,6 +113,20 @@ const data = {
 }
 
 export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
+
+    const {email, profilePicturePath} = useSelector((state: RootState) => state.auth);
+
+    const formatImageUrl = (path: string | null) => {
+        if (!path) return '';
+        return `${process.env.NEXT_PUBLIC_API_URL}/profile-pictures/${path}`;
+    };
+
+    const dynamicUser = {
+        name: data.user.name || "Usuário",
+        email: email || "email@exemplo.com",
+        avatar: formatImageUrl(profilePicturePath),
+    };
+
     return (
         <Sidebar variant="inset" {...props}>
             <SidebarHeader>
@@ -137,7 +153,7 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
                 <NavSecondary items={data.navSecondary} className="mt-auto"/>
             </SidebarContent>
             <SidebarFooter>
-                <NavUser user={data.user}/>
+                <NavUser user={dynamicUser}/>
             </SidebarFooter>
         </Sidebar>
     )
