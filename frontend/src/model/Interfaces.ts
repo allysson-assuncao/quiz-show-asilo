@@ -68,6 +68,12 @@ export interface QuizMetrics {
     averageScore: number;
     totalAttempts: number;
     distinctParticipants: number;
+    maxCorrectAnswers: number;
+}
+
+export interface MostFailedQuestion {
+    questionText: string;
+    errorCount: number;
 }
 
 export interface PagedResponse<T> {

@@ -3,6 +3,7 @@ package org.example.backend.service;
 import org.example.backend.dto.Question.MostFailedQuestionsDTO;
 import org.example.backend.dto.Quiz.QuizMetricsDTO;
 import org.example.backend.dto.Quiz.QuizRankingEntryDTO;
+import org.example.backend.model.Result;
 import org.example.backend.repository.ResultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,8 +29,31 @@ public class ReportService {
         this.resultRepository = resultRepository;
     }
 
-    public QuizMetricsDTO getQuizMetrics(UUID quizId) {
+    /*public QuizMetricsDTO getQuizMetrics(UUID quizId) {
         return this.resultRepository.getQuizMetrics(quizId);
+    }*/
+
+    public QuizMetricsDTO getQuizMetrics(UUID quizId) {
+        QuizMetricsDTO baseMetrics = resultRepository.findSimpleQuizMetrics(quizId);
+        if (baseMetrics == null || baseMetrics.totalAttempts() == 0) {
+            return new QuizMetricsDTO(null, null, 0.0, 0L, 0L, 0L);
+        }
+
+        List<Result> topResults = resultRepository.findTopResultsByScore(quizId, PageRequest.of(0, 1));
+        String topScorerName = !topResults.isEmpty() ? topResults.getFirst().getUser().getName() : null;
+        Double topScore = !topResults.isEmpty() ? topResults.getFirst().getScore() : null;
+
+        List<Long> maxCorrectList = resultRepository.findMaxCorrectAnswersInResult(quizId, PageRequest.of(0, 1));
+        Long maxCorrectAnswers = !maxCorrectList.isEmpty() ? maxCorrectList.getFirst() : 0L;
+
+        return new QuizMetricsDTO(
+                topScorerName,
+                topScore,
+                baseMetrics.averageScore(),
+                baseMetrics.totalAttempts(),
+                baseMetrics.distinctParticipants(),
+                maxCorrectAnswers
+        );
     }
 
     public Page<QuizRankingEntryDTO> getQuizRanking(UUID quizId, Pageable pageable) {

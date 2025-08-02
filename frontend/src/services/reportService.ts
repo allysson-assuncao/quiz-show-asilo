@@ -1,5 +1,5 @@
 import {report} from "@/services/index";
-import {PagedResponse, QuizMetrics, QuizRankingEntry} from "@/model/Interfaces";
+import {MostFailedQuestion, PagedResponse, QuizMetrics, QuizRankingEntry} from "@/model/Interfaces";
 
 export const fetchQuizMetrics = async (quizId: string): Promise<QuizMetrics> => {
     const {data} = await report.get(`/quizzes/${quizId}/metrics`, {
@@ -16,6 +16,15 @@ export const fetchQuizRanking = async (quizId: string, page: number, size: numbe
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
         params: {page, size}
+    });
+    return data;
+};
+
+export const fetchMostFailedQuestions = async (quizId: string): Promise<MostFailedQuestion[]> => {
+    const {data} = await report.get(`/quizzes/${quizId}/most-failed-questions`, {
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        }
     });
     return data;
 };

@@ -5,6 +5,7 @@ import {fetchAllSimpleQuizzes} from "@/services/quizService";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {QuizReportMetricsDisplay} from "@/components/report/QuizReportMetricsDisplay";
 import {QuizReportRank} from "@/components/report/QuizReportRank";
+import {MostFailedQuestions} from "@/components/report/MostFailedQuestions";
 
 export default function QuizReport() {
     const [selectedQuizId, setSelectedQuizId] = useState<string>('');
@@ -33,7 +34,14 @@ export default function QuizReport() {
             {selectedQuizId ? (
                 <div className="space-y-8">
                     <QuizReportMetricsDisplay quizId={selectedQuizId}/>
-                    <QuizReportRank quizId={selectedQuizId}/>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div className="lg:col-span-2">
+                            <QuizReportRank quizId={selectedQuizId}/>
+                        </div>
+                        <div className="mt-12">
+                            <MostFailedQuestions quizId={selectedQuizId} />
+                        </div>
+                    </div>
                 </div>
             ) : (
                 <div className="text-center text-muted-foreground mt-20">

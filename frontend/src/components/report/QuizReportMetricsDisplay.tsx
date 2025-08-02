@@ -1,6 +1,6 @@
 import {useQuery} from "react-query";
 import {fetchQuizMetrics} from "@/services/reportService";
-import {BarChart, Target, Trophy, Users} from "lucide-react";
+import {BarChart, CheckSquare, Target, Trophy, Users} from "lucide-react";
 import {Skeleton} from "@/components/ui/skeleton";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 
@@ -17,6 +17,12 @@ export function QuizReportMetricsDisplay({quizId}: { quizId: string }) {
             value: `${metrics?.topScore?.toFixed(1) ?? 'N/A'}%`,
             subtext: `por ${metrics?.topScorerName ?? '...'}`,
             icon: <Trophy className="h-4 w-4 text-muted-foreground"/>
+        },
+        {
+            title: "Máximo de Acertos",
+            value: metrics?.maxCorrectAnswers ?? '...',
+            subtext: 'em uma única tentativa',
+            icon: <CheckSquare className="h-4 w-4 text-muted-foreground"/>
         },
         {
             title: "Média de Pontuação",
@@ -38,13 +44,13 @@ export function QuizReportMetricsDisplay({quizId}: { quizId: string }) {
     if (isLoading) {
         return (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                {Array.from({length: 4}).map((_, i) => <Skeleton key={i} className="h-32"/>)}
+                {Array.from({length: 5}).map((_, i) => <Skeleton key={i} className="h-32"/>)}
             </div>
         );
     }
 
     return (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             {metricCards.map(card => (
                 <Card key={card.title}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public interface ResultRepository extends JpaRepository<Result, Long> {
 
-    @Query("""
+    /*@Query("""
                 SELECT
                     new org.example.backend.dto.Quiz.QuizMetricsDTO(
                         (SELECT u.name FROM Result r_top JOIN r_top.user u WHERE r_top.quiz.id = :quizId ORDER BY r_top.score DESC, r_top.createdAt ASC LIMIT 1),
@@ -27,7 +27,28 @@ public interface ResultRepository extends JpaRepository<Result, Long> {
                 FROM Result r
                 WHERE r.quiz.id = :quizId
             """)
-    QuizMetricsDTO getQuizMetrics(@Param("quizId") UUID quizId);
+    QuizMetricsDTO getQuizMetrics(@Param("quizId") UUID quizId);*/
+
+    @Query("""
+                SELECT new org.example.backend.dto.Quiz.QuizMetricsDTO(
+                    null, null, AVG(r.score), COUNT(r.id), COUNT(DISTINCT r.user.id), null
+                )
+                FROM Result r WHERE r.quiz.id = :quizId
+            """)
+    QuizMetricsDTO findSimpleQuizMetrics(@Param("quizId") UUID quizId);
+
+    @Query("SELECT r FROM Result r WHERE r.quiz.id = :quizId ORDER BY r.score DESC, r.createdAt ASC")
+    List<Result> findTopResultsByScore(@Param("quizId") UUID quizId, Pageable pageable);
+
+    @Query("""
+                SELECT COUNT(a.id)
+                FROM Answer a
+                WHERE a.result.quiz.id = :quizId AND a.isCorrect = true
+                GROUP BY a.result.id
+                ORDER BY COUNT(a.id) DESC
+            """)
+    List<Long> findMaxCorrectAnswersInResult(@Param("quizId") UUID quizId, Pageable pageable);
+
 
     @Query(value = """
                 SELECT
