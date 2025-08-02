@@ -11,4 +11,6 @@ export const questionFormSchema = z.object({
     }),
 });
 
+
 export type QuestionFormData = z.infer<typeof questionFormSchema>;
+export type EditQuestionFormData = z.infer<typeof questionFormSchema>;

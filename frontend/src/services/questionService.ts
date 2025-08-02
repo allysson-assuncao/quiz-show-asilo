@@ -1,5 +1,5 @@
 import {question} from "@/services/index";
-import {DeleteQuestionFormData, QuestionFormData} from "@/model/FormData";
+import {DeleteQuestionFormData, EditQuestionFormData, QuestionFormData} from "@/model/FormData";
 import {FetchQuestionsPageParams, FetchQuestionsPageResponse, SimpleQuestion} from "@/model/Interfaces";
 
 export const createQuestionRequest = async (data: QuestionFormData) => {
@@ -11,6 +11,17 @@ export const createQuestionRequest = async (data: QuestionFormData) => {
     console.log(response.data)
     return response.data;
 };
+
+export const editQuestionRequest = async (data: EditQuestionFormData) => {
+    const response = await question.put(`/update-question`, data, {
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        data: data,
+    })
+    console.log(response.data)
+    return response.data;
+}
 
 export const fetchAllSimpleQuestions = async (): Promise<SimpleQuestion[]> => {
     const response = await question.get('/select-all-simple', {
@@ -52,4 +63,15 @@ export const deleteQuestion = async (data: DeleteQuestionFormData): Promise<bool
     }else {
         return false;
     }
+}
+
+export const fetchEditableQuestion = async (data: EditQuestionFormData): Promise<EditQuestionFormData> => {
+    const response = await question.get(`/editable/${data.questionId}`, {
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        data: data,
+    })
+    console.log(response.data)
+    return response.data;
 }

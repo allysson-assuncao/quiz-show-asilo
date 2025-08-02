@@ -2,11 +2,14 @@ package org.example.backend.service;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.example.backend.dto.Choice.ChoiceEditRequestDTO;
 import org.example.backend.dto.Question.QuestionDeleteRequestDTO;
+import org.example.backend.dto.Question.QuestionEditRequestDTO;
 import org.example.backend.dto.Question.QuestionRequestDTO;
 import org.example.backend.dto.Question.SimpleQuestionDTO;
 import org.example.backend.model.Choice;
 import org.example.backend.model.Question;
+import org.example.backend.repository.ChoiceRepository;
 import org.example.backend.repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,9 +19,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,15 +31,19 @@ public class QuestionService {
 
     private final QuestionRepository questionRepository;
 
+    private final ChoiceRepository choiceRepository;
+
     @Autowired
-    public QuestionService(QuestionRepository questionRepository) {
+    public QuestionService(QuestionRepository questionRepository, ChoiceRepository choiceRepository) {
         this.questionRepository = questionRepository;
+        this.choiceRepository = choiceRepository;
     }
 
     @Transactional
     public Question createQuestion(QuestionRequestDTO requestDTO) {
         Question question = new Question();
         question.setText(requestDTO.text());
+        question.setCreatedAt(LocalDateTime.now());
 
         Set<Choice> choices = requestDTO.choices().stream()
                 .map(choiceDTO -> {
@@ -74,10 +80,64 @@ public class QuestionService {
         );
     }
 
+    @Transactional
+    public boolean updateQuestion(QuestionEditRequestDTO requestDTO) {
+        if(questionRepository.existsById(requestDTO.questionId())) {
+            Question question = questionRepository.findById(requestDTO.questionId()).get();
+            question = Question.builder()
+                    .updatedAt(LocalDateTime.now())
+                    .choices(editChoices(requestDTO.choices()))
+                    .build();
+            questionRepository.updateQuestionByObject(question);
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    private Set<Choice> editChoices(List<ChoiceEditRequestDTO> requestDTOs) {
+        Set<Choice> choices = new HashSet<>();
+
+        for (ChoiceEditRequestDTO dto : requestDTOs) {
+            if(choiceRepository.existsById(dto.choiceId())) {
+                Choice choice = choiceRepository.findById(dto.choiceId()).get();
+                choice.setText(dto.newText());
+                choice.setCorrect(dto.isCorrect());
+
+                choiceRepository.updateChoiceByObject(choice);
+
+                choices.add(choice);
+
+            }
+
+        }
+
+        return choices;
+    }
+
+    public QuestionEditRequestDTO getEditableQuestionById(UUID id){
+        if(!questionRepository.existsById(id)) return null;
+        Question question = questionRepository.findById(id).get();
+        QuestionEditRequestDTO dto = QuestionEditRequestDTO.builder()
+                .questionId(question.getId())
+                .newText(question.getText())
+                .choices(question.getChoices().stream().map(this::convertToDTO).toList())
+                .build();
+
+        return dto;
+    }
+
+    private ChoiceEditRequestDTO convertToDTO(Choice choice) {
+        return ChoiceEditRequestDTO.builder()
+                .choiceId(choice.getId())
+                .newText(choice.getText())
+                .isCorrect(choice.isCorrect())
+                .build();
+    }
 
     @Transactional
     public boolean deleteQuestion(QuestionDeleteRequestDTO requestDTO) {
-        UUID id = requestDTO.questionId();
+        UUID id = requestDTO.id();
         if (questionRepository.existsById(id)) {
             executeNativeDelete("DELETE FROM answer WHERE question_id = ?", id);
             executeNativeDelete("DELETE FROM answer_choices WHERE choice_id IN (SELECT questionId FROM choice WHERE question_id = ?)", id);

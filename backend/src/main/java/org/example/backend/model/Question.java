@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -24,6 +25,12 @@ public class Question {
 
     @Column(nullable = false)
     private String text;
+
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", columnDefinition = "DATETIME")
+    private LocalDateTime updatedAt;
 
     @ManyToMany(mappedBy = "questions", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JsonIgnore
