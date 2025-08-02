@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/app/auth")
+@RequestMapping("/app/user")
 public class UserController {
 
     private final UserService userService;
@@ -17,9 +17,8 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/profile-picture-path")
-    public ResponseEntity<String> getProfilePicturePathByEmail(@RequestParam String email) {
-        System.out.println(email);
+    @GetMapping("/profile-picture-path/{email}")
+    public ResponseEntity<String> getProfilePicturePathByEmail(@PathVariable String email) {
         String path = userService.getProfilePicturePathByEmail(email);
         return ResponseEntity.ok(path);
     }

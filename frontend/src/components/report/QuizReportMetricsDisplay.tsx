@@ -20,7 +20,7 @@ export function QuizReportMetricsDisplay({quizId}: { quizId: string }) {
 
     const formatImageUrl = (path: string | null | undefined) => {
         if (!path) return '';
-        return `${process.env.NEXT_PUBLIC_API_URL}/profile-pictures/${path}`;
+        return `http://localhost:8081/Pictures/images/${path}`;
     };
 
     const metricCards = [
