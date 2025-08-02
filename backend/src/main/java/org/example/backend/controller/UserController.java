@@ -19,6 +19,7 @@ public class UserController {
 
     @GetMapping("/profile-picture-path")
     public ResponseEntity<String> getProfilePicturePathByEmail(@RequestParam String email) {
+        System.out.println(email);
         String path = userService.getProfilePicturePathByEmail(email);
         return ResponseEntity.ok(path);
     }
