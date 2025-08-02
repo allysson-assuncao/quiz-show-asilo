@@ -23,8 +23,20 @@ export interface ChoiceFormData {
 }
 
 export interface QuestionFormData {
-  text:string;
+  text: string;
   choices: ChoiceFormData[];
+}
+
+export interface EditChoiceFormData {
+    choiceId: string;
+    newText: string;
+    isCorrect: boolean;
+}
+
+export interface EditQuestionFormData {
+    questionId: string;
+    newText: string;
+    choices: EditChoiceFormData[];
 }
 
 export interface DeleteQuestionFormData {

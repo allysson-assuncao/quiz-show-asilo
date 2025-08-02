@@ -3,6 +3,7 @@ package org.example.backend.controller;
 import jakarta.validation.Valid;
 import org.example.backend.dto.FilteredPageDTO;
 import org.example.backend.dto.Question.QuestionDeleteRequestDTO;
+import org.example.backend.dto.Question.QuestionEditRequestDTO;
 import org.example.backend.dto.Question.QuestionRequestDTO;
 import org.example.backend.dto.Question.SimpleQuestionDTO;
 import org.example.backend.model.Question;
@@ -10,12 +11,14 @@ import org.example.backend.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -65,6 +68,19 @@ public class QuestionController {
     ) {
         boolean deleted = this.questionService.deleteQuestion(questionDeleteRequestDTO);
         return ResponseEntity.ok(deleted);
+    }
+
+    @PutMapping("/update-question")
+    public ResponseEntity<QuestionEditRequestDTO> updateQuestion(@Valid @RequestBody QuestionEditRequestDTO requestDTO) {
+        if(questionService.updateQuestion(requestDTO)){
+            return new ResponseEntity<>(requestDTO, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/edit/{id}")
+    public ResponseEntity<QuestionEditRequestDTO> getEditQuestionById(@PathVariable UUID id){
+        return new ResponseEntity<>(questionService.getEditQuestionById(id), HttpStatus.OK);
     }
 
 }
