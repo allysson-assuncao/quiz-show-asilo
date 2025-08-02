@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,7 +45,7 @@ public class QuizService {
         newQuiz.setTitle(dto.title());
         newQuiz.setDescription(dto.description());
         newQuiz.setQuestions(foundQuestions);
-
+        newQuiz.setCreatedAt(LocalDateTime.now());
         return this.quizRepository.save(newQuiz);
     }
 
@@ -80,12 +81,12 @@ public class QuizService {
 
     @Transactional
     public void deleteQuiz(UUID quizId) {
-        if (!quizRepository.existsById(quizId)) {
-            throw new EntityNotFoundException("Quiz não encontrado com o ID: " + quizId);
-        }
-        // Primeiro, deleta os resultados associados para evitar erros de restrição
-        resultRepository.deleteByQuizId(quizId);
-        quizRepository.deleteById(quizId);
+        Quiz quizToDelete = quizRepository.findById(quizId)
+                .orElseThrow(() -> new EntityNotFoundException("Quiz não encontrado com o ID: " + quizId));
+
+        quizToDelete.setDeleted(true);
+        quizRepository.save(quizToDelete);
+
     }
 
     @Transactional(readOnly = true)

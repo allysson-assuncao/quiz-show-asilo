@@ -17,6 +17,6 @@ public interface QuizRepository extends JpaRepository<Quiz, UUID> {
 
     boolean existsByTitleAndIdNot(String title, UUID id);
 
-    @Query("SELECT new org.example.backend.dto.Quiz.SimpleQuizDTO(q.id, q.title, q.description, size(q.questions)) FROM Quiz q ORDER BY q.title")
+    @Query("SELECT new org.example.backend.dto.Quiz.SimpleQuizDTO(q.id, q.title, q.description, size(q.questions)) FROM Quiz q WHERE q.deleted = false ORDER BY q.title")
     List<SimpleQuizDTO> findAllSimple();
 }
