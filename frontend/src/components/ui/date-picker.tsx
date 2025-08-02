@@ -8,13 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
-export function DatePicker({ onDateSelected }: { onDateSelected: (date: Date) => void; }) {
+export function DatePicker({ onDateSelectedAction }: { onDateSelectedAction: (date: Date) => void; }) {
     const [date, setDate] = React.useState<Date | undefined>(undefined);
 
     const handleDateSelect = (selectedDate: Date | undefined) => {
         if (selectedDate) {
             setDate(selectedDate);
-            onDateSelected(selectedDate);
+            onDateSelectedAction(selectedDate);
         }
     };
 

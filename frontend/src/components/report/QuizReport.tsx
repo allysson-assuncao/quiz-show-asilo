@@ -1,4 +1,4 @@
-import {SimpleQuiz} from "@/model/Interfaces";
+import {SimpleQuizDTO} from "@/model/Interfaces";
 import {useQuery} from "react-query";
 import {useState} from "react";
 import {fetchAllSimpleQuizzes} from "@/services/quizService";
@@ -12,7 +12,7 @@ import {UserActivityReport} from "@/components/report/UserActivityReport";
 export default function QuizReport() {
     const [selectedQuizId, setSelectedQuizId] = useState<string>('');
 
-    const {data: quizzes = [], isLoading: isLoadingQuizzes} = useQuery<SimpleQuiz[]>({
+    const {data: quizzes = [], isLoading: isLoadingQuizzes} = useQuery<SimpleQuizDTO[]>({
         queryKey: ['simpleQuizzes'],
         queryFn: fetchAllSimpleQuizzes,
     });
