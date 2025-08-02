@@ -2,7 +2,7 @@ import {useForm} from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
 import {registerSchema} from '@/utils/authValidation'
 import {useMutation} from 'react-query'
-import {useDispatch} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import {logout, signup} from '@/store/slices/authSlice'
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from '@/components/ui/card'
 import {Button} from '@/components/ui/button'
@@ -27,11 +27,16 @@ import {
     SelectValue
 } from "@/components/ui/select";
 import {RegisterFormData} from "@/model/FormData";
+import Image from "next/image";
+import {RootState} from "@/store";
 
 const RegisterForm = () => {
+    const profilePicture = useSelector((state: RootState) => state.auth.profilePicturePath)
     const router = useRouter();
     const dispatch = useDispatch();
     const [selectedRole, setSelectedRole] = useState<string>('');
+    const [selectedImage, setSelectedImage] = useState<File | null>(null)
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(profilePicture || null)
 
     const form = useForm<RegisterFormData>({
         resolver: zodResolver(registerSchema),
@@ -81,7 +86,20 @@ const RegisterForm = () => {
     })
 
     const onSubmit = (data: RegisterFormData) => {
-        mutation.mutate(data);
+        const formData = new FormData()
+        formData.append('user', JSON.stringify(data))
+        if (selectedImage) {
+            formData.append('image', selectedImage)
+        }
+        mutation.mutate(formData)
+    }
+
+    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0]
+        if (file) {
+            setSelectedImage(file)
+            setAvatarPreview(URL.createObjectURL(file))
+        }
     }
 
     return (
@@ -113,18 +131,38 @@ const RegisterForm = () => {
                                 <FormField
                                     control={form.control}
                                     name="profilePicture"
-                                    render={({field: {onChange, ...rest}}) => (
+                                    render={() => (
                                         <FormItem>
-                                            <FormLabel>Foto de Perfil (Opcional)</FormLabel>
+                                            <FormLabel>Avatar</FormLabel>
                                             <FormControl>
-                                                <Input
-                                                    type="file"
-                                                    accept="image/png, image/jpeg"
-                                                    {...rest}
-                                                    onChange={(e) => {
-                                                        onChange(e.target.files);
-                                                    }}
-                                                />
+                                                <div>
+                                                    <div
+                                                        className="relative w-24 h-24 rounded-full overflow-hidden cursor-pointer">
+                                                        {avatarPreview ? (
+                                                            <Image
+                                                                src={avatarPreview}
+                                                                alt="Avatar preview"
+                                                                layout="fill"
+                                                                objectFit="cover"
+                                                                onClick={() => document.getElementById('avatar-input')?.click()}
+                                                            />
+                                                        ) : (
+                                                            <div
+                                                                className="w-full h-full bg-gray-200 flex items-center justify-center"
+                                                                onClick={() => document.getElementById('avatar-input')?.click()}
+                                                            >
+                                                                <span>Upload</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <input
+                                                        id="avatar-input"
+                                                        type="file"
+                                                        accept="image/*"
+                                                        className="hidden"
+                                                        onChange={handleImageChange}
+                                                    />
+                                                </div>
                                             </FormControl>
                                             <FormMessage/>
                                         </FormItem>

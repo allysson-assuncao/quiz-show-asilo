@@ -34,12 +34,12 @@ public class AuthController {
                 ResponseEntity.badRequest().body(Map.of("message", "Credenciais inválidas!"));
     }
 
-    @PostMapping(value = "/register", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/register")
     public ResponseEntity<AuthResponseDTO> register(
             @RequestPart("user") @Valid UserRegisterDTO userRegisterDTO,
-            @RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture) {
+            @RequestParam(value = "image", required = false) MultipartFile image) {
 
-        AuthResponseDTO authResponseDTO = this.authService.register(userRegisterDTO, profilePicture);
+        AuthResponseDTO authResponseDTO = this.authService.register(userRegisterDTO, image);
         return ResponseEntity.status(HttpStatus.CREATED).body(authResponseDTO);
     }
 
