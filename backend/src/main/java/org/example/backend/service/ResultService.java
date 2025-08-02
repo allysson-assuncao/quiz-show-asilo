@@ -5,10 +5,7 @@ import org.example.backend.dto.Result.ResultRequestDTO;
 import org.example.backend.dto.Result.ResultSummaryDTO;
 import org.example.backend.dto.User.UserAnswerDTO;
 import org.example.backend.model.*;
-import org.example.backend.repository.QuestionRepository;
-import org.example.backend.repository.QuizRepository;
-import org.example.backend.repository.ResultRepository;
-import org.example.backend.repository.UserRepository;
+import org.example.backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,12 +20,14 @@ public class ResultService {
     private final ResultRepository resultRepository;
     private final QuizRepository quizRepository;
     private final UserRepository userRepository;
+    private final ChoiceRepository choiceRepository;
 
     @Autowired
-    public ResultService(ResultRepository resultRepository, QuizRepository quizRepository, UserRepository userRepository) {
+    public ResultService(ResultRepository resultRepository, QuizRepository quizRepository, UserRepository userRepository, ChoiceRepository choiceRepository) {
         this.resultRepository = resultRepository;
         this.quizRepository = quizRepository;
         this.userRepository = userRepository;
+        this.choiceRepository = choiceRepository;
     }
 
     @Transactional
