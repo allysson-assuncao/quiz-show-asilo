@@ -1,6 +1,6 @@
 import {question} from "@/services/index";
-import {QuestionFormData} from "@/model/FormData";
-import {SimpleQuestion} from "@/model/Interfaces";
+import {DeleteQuestionFormData, QuestionFormData} from "@/model/FormData";
+import {FetchQuestionsPageParams, FetchQuestionsPageResponse, SimpleQuestion} from "@/model/Interfaces";
 
 export const createQuestionRequest = async (data: QuestionFormData) => {
     const response = await question.post('/register', data, {
@@ -20,3 +20,35 @@ export const fetchAllSimpleQuestions = async (): Promise<SimpleQuestion[]> => {
     });
     return response.data;
 };
+
+export const fetchQuestionsPage = async (params: FetchQuestionsPageParams)
+    : Promise<FetchQuestionsPageResponse> => {
+    const response = await question.get('/get-questions-page', {
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        params: {
+            page: params.page || 0,
+            size: params.size || 350,
+            orderBy: params.orderBy || 'text',
+            direction: params.direction || 'ASC',
+        },
+    });
+    console.log(response)
+    console.log(response.data)
+    return response.data;
+}
+
+export const deleteQuestion = async (data: DeleteQuestionFormData): Promise<boolean> => {
+    const response = await question.post('/delete-question', data, {
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+    })
+    console.log(response.data)
+    if (response.data.status === 204) {
+        return true;
+    }else {
+        return false;
+    }
+}

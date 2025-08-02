@@ -33,7 +33,7 @@ public class QuizController {
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
-                .path("/{id}")
+                .path("/{questionId}")
                 .buildAndExpand(createdQuiz.getId())
                 .toUri();
 

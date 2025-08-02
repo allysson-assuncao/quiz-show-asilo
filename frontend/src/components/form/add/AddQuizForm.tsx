@@ -6,7 +6,7 @@ import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, Form
 import {Textarea} from "@/components/ui/textarea";
 import {useMutation, useQuery, useQueryClient} from "react-query";
 import {fetchAllSimpleQuestions} from "@/services/questionService";
-import {QuizFormData, quizFormSchema} from "@/utils/operations/quizValidation";
+import {QuizFormData, quizFormSchema} from "@/utils/quizValidation";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {createQuizRequest} from "@/services/quizService";
 import {toast} from "sonner";

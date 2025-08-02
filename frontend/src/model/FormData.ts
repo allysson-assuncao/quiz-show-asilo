@@ -27,3 +27,7 @@ export interface QuestionFormData {
     text: string;
     choices: ChoiceFormData[];
 }
+
+export interface DeleteQuestionFormData {
+    questionId: string;
+}

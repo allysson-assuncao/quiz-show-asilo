@@ -1,6 +1,6 @@
 import {useMutation, useQueryClient} from "react-query";
 import {useFieldArray, useForm} from "react-hook-form";
-import {QuestionFormData, questionFormSchema} from "@/utils/operations/questionValidation";
+import {QuestionFormData, questionFormSchema} from "@/utils/questionValidation";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {createQuestionRequest} from "@/services/questionService";
 import {toast} from "sonner";
