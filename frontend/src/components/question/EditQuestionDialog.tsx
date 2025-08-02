@@ -1,16 +1,17 @@
 import {Drawer, DrawerContent} from "@/components/ui/drawer";
-import {AddQuestionForm} from "@/components/form/add/AddQuestionForm";
+import {EditQuestionForm} from "@/components/form/edit/EditQuestionForm";
 
-interface AddQuestionDialogProps {
+interface EditQuestionDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    questionId: string | undefined;
 }
 
-export function EditQuestionDialog({open, onOpenChange}: AddQuestionDialogProps) {
+export function EditQuestionDialog({open, onOpenChange, questionId}: EditQuestionDialogProps) {
     return (
         <Drawer open={open} onOpenChange={onOpenChange}>
             <DrawerContent>
-                <AddQuestionForm/>
+                {questionId && <EditQuestionForm questionId={questionId} />}
             </DrawerContent>
         </Drawer>
     );

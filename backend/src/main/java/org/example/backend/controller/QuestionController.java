@@ -78,9 +78,9 @@ public class QuestionController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @GetMapping("/edit/{id}")
-    public ResponseEntity<QuestionEditRequestDTO> getEditQuestionById(@PathVariable UUID id){
-        return new ResponseEntity<>(questionService.getEditQuestionById(id), HttpStatus.OK);
+    @GetMapping("/editable/{id}")
+    public ResponseEntity<QuestionEditRequestDTO> getEditableQuestionById(@PathVariable UUID id){
+        return new ResponseEntity<>(questionService.getEditableQuestionById(id), HttpStatus.OK);
     }
 
 }

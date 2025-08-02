@@ -3,7 +3,6 @@ package org.example.backend.service;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.example.backend.dto.Choice.ChoiceEditRequestDTO;
-import org.example.backend.dto.Choice.ChoiceRequestDTO;
 import org.example.backend.dto.Question.QuestionDeleteRequestDTO;
 import org.example.backend.dto.Question.QuestionEditRequestDTO;
 import org.example.backend.dto.Question.QuestionRequestDTO;
@@ -116,7 +115,7 @@ public class QuestionService {
         return choices;
     }
 
-    public QuestionEditRequestDTO getEditQuestionById(UUID id){
+    public QuestionEditRequestDTO getEditableQuestionById(UUID id){
         if(!questionRepository.existsById(id)) return null;
         Question question = questionRepository.findById(id).get();
         QuestionEditRequestDTO dto = QuestionEditRequestDTO.builder()

@@ -159,6 +159,7 @@ const ManageQuestionTable = () => {
             <EditQuestionDialog
                 open={editDialogOpen}
                 onOpenChange={setEditDialogOpen}
+                questionId={selectedEditQuestion?.id}
             />
         </div>
     );

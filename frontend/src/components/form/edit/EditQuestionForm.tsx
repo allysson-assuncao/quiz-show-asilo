@@ -2,7 +2,7 @@ import {useMutation, useQueryClient} from "react-query";
 import {useFieldArray, useForm} from "react-hook-form";
 import {QuestionFormData, questionFormSchema} from "@/utils/questionValidation";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {createQuestionRequest} from "@/services/questionService";
+import {createQuestionRequest, editQuestionRequest} from "@/services/questionService";
 import {toast} from "sonner";
 import {AxiosError} from "axios";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
@@ -13,13 +13,20 @@ import {Input} from "@/components/ui/input";
 import {Switch} from "@/components/ui/switch";
 import {Button} from "@/components/ui/button";
 import {Icons} from "@/public/icons";
+import {EditQuestionFormData} from "@/model/FormData";
 
-export function EditQuestionForm() {
+import {useEffect, useState} from "react";
+import {fetchEditableQuestion} from "@/services/questionService";
+
+export function EditQuestionForm({ questionId }: { questionId: string }) {
     const queryClient = useQueryClient();
+    const [loading, setLoading] = useState(true);
+    const [fetchedData, setFetchedData] = useState<EditQuestionFormData | null>(null);
 
-    const form = useForm<QuestionFormData>({
+    const form = useForm<EditQuestionFormData>({
         resolver: zodResolver(questionFormSchema),
         defaultValues: {
+            questionId: questionId,
             text: "",
             choices: [
                 {text: "", isCorrect: false},
@@ -29,22 +36,39 @@ export function EditQuestionForm() {
         mode: 'onBlur',
     });
 
+    useEffect(() => {
+        if (!questionId) return;
+        setLoading(true);
+        setFetchedData(null);
+        async function fetchData() {
+            try {
+                const data = await fetchEditableQuestion({ questionId });
+                setFetchedData(data);
+                form.reset(data);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [questionId]);
+
     const {fields, append, remove} = useFieldArray({
         control: form.control,
         name: "choices",
     });
 
     const mutation = useMutation({
-        mutationFn: createQuestionRequest,
+        mutationFn: editQuestionRequest,
         onSuccess: () => {
-            toast.success("Pergunta cadastrada com sucesso!");
+            toast.success("Pergunta editada com sucesso!");
             queryClient.invalidateQueries({queryKey: ['questions']});
         },
         onError: (error) => {
             const errorMessage = error instanceof AxiosError
                 ? error.response?.data?.message
                 : "Ocorreu um erro inesperado.";
-            toast.error("Erro ao cadastrar pergunta", {description: errorMessage});
+            toast.error("Erro ao editar pergunta", {description: errorMessage});
         },
     });
 
@@ -52,10 +76,27 @@ export function EditQuestionForm() {
         mutation.mutate(data);
     };
 
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[200px]">
+                <Icons.spinner className="animate-spin w-8 h-8 text-muted-foreground" />
+                <span className="ml-2">Carregando pergunta...</span>
+            </div>
+        );
+    }
+
+    if (!fetchedData) {
+        return (
+            <div className="flex items-center justify-center min-h-[200px] text-destructive">
+                Não foi possível carregar os dados da pergunta.
+            </div>
+        );
+    }
+
     return (
         <Card className="m-12">
             <CardHeader>
-                <CardTitle>Cadastrar Nova Pergunta</CardTitle>
+                <CardTitle>Editar Pergunta</CardTitle>
             </CardHeader>
             <CardContent>
                 <Form {...form}>

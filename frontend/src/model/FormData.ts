@@ -28,14 +28,13 @@ export interface QuestionFormData {
 }
 
 export interface EditChoiceFormData {
-    choiceId: string;
-    newText: string;
+    text: string;
     isCorrect: boolean;
 }
 
 export interface EditQuestionFormData {
     questionId: string;
-    newText: string;
+    text: string;
     choices: EditChoiceFormData[];
 }
 
