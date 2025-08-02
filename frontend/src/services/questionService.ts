@@ -66,7 +66,7 @@ export const deleteQuestion = async (data: DeleteQuestionFormData): Promise<bool
 }
 
 export const fetchEditableQuestion = async (data: EditQuestionFormData): Promise<EditQuestionFormData> => {
-    const response = await question.get(`/edit/${data.questionId}`, {
+    const response = await question.get(`/editable/${data.questionId}`, {
         headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
