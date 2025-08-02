@@ -12,17 +12,17 @@ export interface RegisterFormData {
 }
 
 export interface QuizFormData {
-  title: string;
-  description?: string;
-  questionIds: string[];
+    title: string;
+    description?: string;
+    questionIds: string[];
 }
 
 export interface ChoiceFormData {
-  text: string;
-  isCorrect: boolean;
+    text: string;
+    isCorrect: boolean;
 }
 
 export interface QuestionFormData {
-  text:string;
-  choices: ChoiceFormData[];
+    text: string;
+    choices: ChoiceFormData[];
 }

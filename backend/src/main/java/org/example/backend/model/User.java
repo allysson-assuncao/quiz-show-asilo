@@ -36,6 +36,9 @@ public class User implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "profile_picture_path")
+    private String profilePicturePath;
+
     @Column(name = "role", nullable = false)
     private UserRole role;
 
