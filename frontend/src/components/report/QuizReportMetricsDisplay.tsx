@@ -1,5 +1,5 @@
 import {useQuery} from "react-query";
-import {fetchQuizMetrics} from "@/services/reportService";
+import {fetchQuizMetrics, fetchTopScorerProfilePicturePath} from "@/services/reportService";
 import {BarChart, CheckSquare, Target, Trophy, Users} from "lucide-react";
 import {Skeleton} from "@/components/ui/skeleton";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
@@ -10,6 +10,17 @@ export function QuizReportMetricsDisplay({quizId}: { quizId: string }) {
         queryFn: () => fetchQuizMetrics(quizId),
         enabled: !!quizId,
     });
+
+    const { data: topScorerImgPath, isLoading: isLoadingImg } = useQuery({
+        queryKey: ['topScorerPicture', quizId],
+        queryFn: () => fetchTopScorerProfilePicturePath(quizId),
+        enabled: !!quizId,
+    });
+
+    const formatImageUrl = (path: string | null | undefined) => {
+        if (!path) return '';
+        return `${process.env.NEXT_PUBLIC_API_URL}/profile-pictures/${path}`;
+    };
 
     const metricCards = [
         {

@@ -2,7 +2,7 @@ import {useForm} from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
 import {registerSchema} from '@/utils/authValidation'
 import {useMutation} from 'react-query'
-import {useDispatch, useSelector} from 'react-redux'
+import {useDispatch} from 'react-redux'
 import {logout, signup} from '@/store/slices/authSlice'
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from '@/components/ui/card'
 import {Button} from '@/components/ui/button'
@@ -28,10 +28,8 @@ import {
 } from "@/components/ui/select";
 import {RegisterFormData} from "@/model/FormData";
 import Image from "next/image";
-import {RootState} from "@/store";
 
 const RegisterForm = () => {
-    const profilePicture = useSelector((state: RootState) => state.auth.profilePicturePath)
     const router = useRouter();
     const dispatch = useDispatch();
     const [selectedRole, setSelectedRole] = useState<string>('');
