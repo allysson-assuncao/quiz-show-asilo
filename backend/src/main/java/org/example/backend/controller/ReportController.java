@@ -3,6 +3,7 @@ package org.example.backend.controller;
 import org.example.backend.dto.Question.MostFailedQuestionsDTO;
 import org.example.backend.dto.Quiz.QuizMetricsDTO;
 import org.example.backend.dto.Quiz.QuizRankingEntryDTO;
+import org.example.backend.dto.Quiz.UserQuizAnswerCountDTO;
 import org.example.backend.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,6 +31,11 @@ public class ReportController {
     @GetMapping("/quizzes/{quizId}/metrics")
     public ResponseEntity<QuizMetricsDTO> getQuizMetrics(@PathVariable UUID quizId) {
         return ResponseEntity.ok(reportService.getQuizMetrics(quizId));
+    }
+
+    @GetMapping("/user-quiz-answer-counts")
+    public ResponseEntity<List<UserQuizAnswerCountDTO>> getUserQuizAnswerCounts() {
+        return ResponseEntity.ok(reportService.getUserQuizAnswerCounts());
     }
 
     @GetMapping("/quizzes/{quizId}/ranking")

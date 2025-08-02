@@ -3,6 +3,7 @@ package org.example.backend.service;
 import org.example.backend.dto.Question.MostFailedQuestionsDTO;
 import org.example.backend.dto.Quiz.QuizMetricsDTO;
 import org.example.backend.dto.Quiz.QuizRankingEntryDTO;
+import org.example.backend.dto.Quiz.UserQuizAnswerCountDTO;
 import org.example.backend.model.Result;
 import org.example.backend.repository.ResultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +55,10 @@ public class ReportService {
                 baseMetrics.distinctParticipants(),
                 maxCorrectAnswers
         );
+    }
+
+    public List<UserQuizAnswerCountDTO> getUserQuizAnswerCounts() {
+        return resultRepository.findUserQuizAnswerCounts();
     }
 
     public Page<QuizRankingEntryDTO> getQuizRanking(UUID quizId, Pageable pageable) {

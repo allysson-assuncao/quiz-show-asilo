@@ -2,6 +2,7 @@ package org.example.backend.repository;
 
 import org.example.backend.dto.Question.MostFailedQuestionsDTO;
 import org.example.backend.dto.Quiz.QuizMetricsDTO;
+import org.example.backend.dto.Quiz.UserQuizAnswerCountDTO;
 import org.example.backend.model.Result;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -49,6 +50,18 @@ public interface ResultRepository extends JpaRepository<Result, Long> {
             """)
     List<Long> findMaxCorrectAnswersInResult(@Param("quizId") UUID quizId, Pageable pageable);
 
+    @Query("""
+        SELECT new org.example.backend.dto.Quiz.UserQuizAnswerCountDTO(
+            u.name, q.title, COUNT(a.id)
+        )
+        FROM Answer a
+        JOIN a.result r
+        JOIN r.user u
+        JOIN r.quiz q
+        GROUP BY u.name, q.title
+        ORDER BY COUNT(a.id) DESC
+    """)
+    List<UserQuizAnswerCountDTO> findUserQuizAnswerCounts();
 
     @Query(value = """
                 SELECT
