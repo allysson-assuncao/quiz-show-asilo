@@ -1,30 +1,37 @@
-import {QuizFormData} from "@/model/FormData";
-import {quiz} from "@/services/index";
-import {QuizForTaking, SimpleQuiz} from "@/model/Interfaces";
+import { quiz } from "@/services/index";
+import { QuizForTaking, SimpleQuizDTO, QuizDetailDTO } from "@/model/Interfaces";
+import { QuizFormData } from "@/lib/validators/quizValidator";
 
-export const createQuizRequest = async (data: QuizFormData) => {
-    const response = await quiz.post('/register', data, {
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-    });
+// --- Funções de Leitura (Read) ---
+
+export const fetchAllSimpleQuizzes = async (): Promise<SimpleQuizDTO[]> => {
+    const response = await quiz.get('/simple-list');
     return response.data;
 };
 
 export const fetchQuizForTaking = async (quizId: string): Promise<QuizForTaking> => {
-    const response = await quiz.get(`/${quizId}/take`, {
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-    });
+    const response = await quiz.get(`/${quizId}/take`);
     return response.data;
 };
 
-export const fetchAllSimpleQuizzes = async (): Promise<SimpleQuiz[]> => {
-    const response = await quiz.get('/select-all-simple', {
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-    });
+export const fetchQuizDetails = async (quizId: string): Promise<QuizDetailDTO> => {
+    const response = await quiz.get(`/${quizId}/details`);
+    return response.data;
+};
+
+// --- Funções de Escrita (Create, Update, Delete) ---
+
+export const createQuiz = async (data: QuizFormData) => {
+    const response = await quiz.post('/register', data);
+    return response.data;
+};
+
+export const updateQuiz = async ({ quizId, data }: { quizId: string, data: QuizFormData }) => {
+    const response = await quiz.put(`/${quizId}`, data);
+    return response.data;
+};
+
+export const deleteQuiz = async (quizId: string) => {
+    const response = await quiz.delete(`/${quizId}`);
     return response.data;
 };

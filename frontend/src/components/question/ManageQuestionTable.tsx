@@ -116,7 +116,7 @@ const ManageQuestionTable = () => {
 
 
     if (isTableLoading) return <DataTableSkeleton />;
-    if (tableError) return <div>Error: {tableError.message}</div>;
+    if (tableError) return <div>Error:</div>;
 
     return (
         <div className={"container mx-auto py-10 w-full max-w-[1920px] 5xl:mx-auto 5xl:px-32"}>

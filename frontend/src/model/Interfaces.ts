@@ -28,7 +28,7 @@ export interface QuizForTaking {
     questions: QuestionForTaking[];
 }
 
-export interface SimpleQuiz {
+export interface SimpleQuizDTO {
     id: string;
     title: string;
     description: string;
@@ -113,4 +113,11 @@ export interface FetchQuestionsPageParams {
 
 export interface QuestionFilters{
     text?: string;
+}
+
+export interface QuizDetailDTO {
+    id: string;
+    title: string;
+    description: string;
+    questions: SimpleQuestion[]; // Reutiliza a interface SimpleQuestion que você já tem
 }
