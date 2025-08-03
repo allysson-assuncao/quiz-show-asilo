@@ -82,18 +82,20 @@ public class QuestionService {
 
     @Transactional
     public boolean updateQuestion(QuestionEditRequestDTO requestDTO) {
-        if(requestDTO.questionId()==null) {
+        if (requestDTO.questionId() == null) {
             return false;
         }
-        if(questionRepository.existsById(requestDTO.questionId())) {
+        if (questionRepository.existsById(requestDTO.questionId())) {
             Question question = questionRepository.findById(requestDTO.questionId()).get();
             question = Question.builder()
+                    .id(requestDTO.questionId())
+                    .text(requestDTO.text())
                     .updatedAt(LocalDateTime.now())
                     .choices(editChoices(requestDTO.choices(), question))
                     .build();
             questionRepository.updateQuestionByObject(question);
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -102,7 +104,7 @@ public class QuestionService {
         Set<Choice> choices = new HashSet<>();
 
         for (ChoiceEditRequestDTO dto : requestDTOs) {
-            if(choiceRepository.existsById(dto.choiceId())) {
+            if (choiceRepository.existsById(dto.choiceId())) {
                 Choice choice = choiceRepository.findById(dto.choiceId()).get();
                 choice.setText(dto.text());
                 choice.setCorrect(dto.isCorrect());
@@ -111,7 +113,7 @@ public class QuestionService {
 
                 choices.add(choice);
 
-            }else{
+            } else {
                 Choice choice = Choice.builder()
                         .id(UUID.randomUUID())
                         .text(dto.text())
@@ -127,8 +129,8 @@ public class QuestionService {
         return choices;
     }
 
-    public QuestionEditRequestDTO getEditableQuestionById(UUID id){
-        if(!questionRepository.existsById(id)) return null;
+    public QuestionEditRequestDTO getEditableQuestionById(UUID id) {
+        if (!questionRepository.existsById(id)) return null;
         Question question = questionRepository.findById(id).get();
         QuestionEditRequestDTO dto = QuestionEditRequestDTO.builder()
                 .questionId(question.getId())

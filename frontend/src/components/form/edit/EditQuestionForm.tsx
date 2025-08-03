@@ -45,10 +45,8 @@ export function EditQuestionForm({questionId}: { questionId: string }) {
             try {
                 const data = await fetchEditableQuestion(questionId);
                 setFetchedData(data);
+                // Apenas o form.reset é necessário para popular o formulário
                 form.reset({...data, questionId});
-                fields.forEach((field, index) => {
-                    form.register(`choices.${index}.choiceId`);
-                });
             } finally {
                 setLoading(false);
             }
@@ -158,7 +156,7 @@ export function EditQuestionForm({questionId}: { questionId: string }) {
                                             control={form.control}
                                             name={`choices.${index}.choiceId`}
                                             render={({field}) => (
-                                                <input type="hidden" value={field.value} {...field} />
+                                                <Input type="hidden" {...field} />
                                             )}
                                         />
                                     </div>

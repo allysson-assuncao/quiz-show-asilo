@@ -62,16 +62,18 @@ public class QuestionController {
         return ResponseEntity.ok(new FilteredPageDTO<>(questionPage.getContent(), questionPage.getTotalPages()));
     }
 
-    @PostMapping("/delete-question")
+    @DeleteMapping("/delete-question/{questionId}")
     public ResponseEntity<Boolean> deleteQuestion(
-            @RequestBody QuestionDeleteRequestDTO questionDeleteRequestDTO
+            @PathVariable UUID questionId
     ) {
-        boolean deleted = this.questionService.deleteQuestion(questionDeleteRequestDTO);
+        System.out.println(questionId);
+        boolean deleted = this.questionService.deleteQuestion(questionId);
         return ResponseEntity.ok(deleted);
     }
 
     @PutMapping("/update-question")
     public ResponseEntity<QuestionEditRequestDTO> updateQuestion(@Valid @RequestBody QuestionEditRequestDTO requestDTO) {
+        System.out.println(requestDTO.toString());
         if(questionService.updateQuestion(requestDTO)){
             return new ResponseEntity<>(requestDTO, HttpStatus.OK);
         }
