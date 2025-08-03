@@ -17,7 +17,6 @@ export const editQuestionRequest = async (data: EditQuestionFormData) => {
         headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
-        data: data,
     })
     console.log(response.data)
     return response.data;
@@ -65,8 +64,8 @@ export const deleteQuestion = async (data: DeleteQuestionFormData): Promise<bool
     }
 }
 
-export const fetchEditableQuestion = async (data: EditQuestionFormData): Promise<EditQuestionFormData> => {
-    const response = await question.get(`/editable/${data.questionId}`, {
+export const fetchEditableQuestion = async (data: string): Promise<EditQuestionFormData> => {
+    const response = await question.get(`/editable/${data}`, {
         headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },

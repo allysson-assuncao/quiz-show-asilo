@@ -82,11 +82,14 @@ public class QuestionService {
 
     @Transactional
     public boolean updateQuestion(QuestionEditRequestDTO requestDTO) {
+        if(requestDTO.questionId()==null) {
+            return false;
+        }
         if(questionRepository.existsById(requestDTO.questionId())) {
             Question question = questionRepository.findById(requestDTO.questionId()).get();
             question = Question.builder()
                     .updatedAt(LocalDateTime.now())
-                    .choices(editChoices(requestDTO.choices()))
+                    .choices(editChoices(requestDTO.choices(), question))
                     .build();
             questionRepository.updateQuestionByObject(question);
             return true;
@@ -95,19 +98,28 @@ public class QuestionService {
         }
     }
 
-    private Set<Choice> editChoices(List<ChoiceEditRequestDTO> requestDTOs) {
+    private Set<Choice> editChoices(List<ChoiceEditRequestDTO> requestDTOs, Question question) {
         Set<Choice> choices = new HashSet<>();
 
         for (ChoiceEditRequestDTO dto : requestDTOs) {
             if(choiceRepository.existsById(dto.choiceId())) {
                 Choice choice = choiceRepository.findById(dto.choiceId()).get();
-                choice.setText(dto.newText());
+                choice.setText(dto.text());
                 choice.setCorrect(dto.isCorrect());
 
                 choiceRepository.updateChoiceByObject(choice);
 
                 choices.add(choice);
 
+            }else{
+                Choice choice = Choice.builder()
+                        .id(UUID.randomUUID())
+                        .text(dto.text())
+                        .isCorrect(dto.isCorrect())
+                        .question(question)
+                        .build();
+
+                choiceRepository.save(choice);
             }
 
         }
@@ -120,7 +132,7 @@ public class QuestionService {
         Question question = questionRepository.findById(id).get();
         QuestionEditRequestDTO dto = QuestionEditRequestDTO.builder()
                 .questionId(question.getId())
-                .newText(question.getText())
+                .text(question.getText())
                 .choices(question.getChoices().stream().map(this::convertToDTO).toList())
                 .build();
 
@@ -130,7 +142,7 @@ public class QuestionService {
     private ChoiceEditRequestDTO convertToDTO(Choice choice) {
         return ChoiceEditRequestDTO.builder()
                 .choiceId(choice.getId())
-                .newText(choice.getText())
+                .text(choice.getText())
                 .isCorrect(choice.isCorrect())
                 .build();
     }
@@ -140,7 +152,8 @@ public class QuestionService {
         UUID id = requestDTO.id();
         if (questionRepository.existsById(id)) {
             executeNativeDelete("DELETE FROM answer WHERE question_id = ?", id);
-            executeNativeDelete("DELETE FROM answer_choices WHERE choice_id IN (SELECT questionId FROM choice WHERE question_id = ?)", id);
+            executeNativeDelete("DELETE FROM answer_choices WHERE choice_id IN " +
+                    "(SELECT questionId FROM choice WHERE question_id = ?)", id);
             executeNativeDelete("DELETE FROM quiz_question WHERE question_id = ?", id);
             executeNativeDelete("DELETE FROM choice WHERE question_id = ?", id);
             questionRepository.deleteById(id);

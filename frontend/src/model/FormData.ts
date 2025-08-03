@@ -19,6 +19,7 @@ export interface QuizFormData {
 }
 
 export interface ChoiceFormData {
+    choiceId: string;
     text: string;
     isCorrect: boolean;
 }
@@ -29,6 +30,7 @@ export interface QuestionFormData {
 }
 
 export interface EditChoiceFormData {
+    choiceId: string | null;
     text: string;
     isCorrect: boolean;
 }

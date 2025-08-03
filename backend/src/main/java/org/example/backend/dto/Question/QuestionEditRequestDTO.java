@@ -7,4 +7,4 @@ import java.util.List;
 import java.util.UUID;
 
 @Builder
-public record QuestionEditRequestDTO(UUID questionId, String newText, List<ChoiceEditRequestDTO> choices) {}
+public record QuestionEditRequestDTO(UUID questionId, String text, List<ChoiceEditRequestDTO> choices) {}
