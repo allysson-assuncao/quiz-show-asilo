@@ -1,8 +1,8 @@
 import {useMutation, useQueryClient} from "react-query";
 import {useFieldArray, useForm} from "react-hook-form";
-import {QuestionFormData, questionFormSchema} from "@/utils/questionValidation";
+import {questionFormSchema} from "@/utils/questionValidation";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {createQuestionRequest, editQuestionRequest} from "@/services/questionService";
+import {editQuestionRequest} from "@/services/questionService";
 import {toast} from "sonner";
 import {AxiosError} from "axios";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
@@ -29,8 +29,8 @@ export function EditQuestionForm({ questionId }: { questionId: string }) {
             questionId: questionId,
             text: "",
             choices: [
-                {text: "", isCorrect: false},
-                {text: "", isCorrect: false},
+                {choiceId: "", text: "", isCorrect: false},
+                {choiceId: "", text: "", isCorrect: false},
             ],
         },
         mode: 'onBlur',
@@ -42,9 +42,9 @@ export function EditQuestionForm({ questionId }: { questionId: string }) {
         setFetchedData(null);
         async function fetchData() {
             try {
-                const data = await fetchEditableQuestion({ questionId });
+                const data = await fetchEditableQuestion(questionId);
                 setFetchedData(data);
-                form.reset(data);
+                form.reset({ ...data, questionId });
             } finally {
                 setLoading(false);
             }
@@ -72,7 +72,9 @@ export function EditQuestionForm({ questionId }: { questionId: string }) {
         },
     });
 
-    const onSubmit = (data: QuestionFormData) => {
+    const onSubmit = (data: EditQuestionFormData) => {
+        data.questionId = questionId;
+        console.log(data)
         mutation.mutate(data);
     };
 
@@ -114,6 +116,7 @@ export function EditQuestionForm({ questionId }: { questionId: string }) {
                                 </FormItem>
                             )}
                         />
+                        <input type="hidden" value={questionId} {...form.register("questionId")} />
                         <Separator/>
                         <div className="space-y-4">
                             <FormLabel>Alternativas</FormLabel>
@@ -146,6 +149,13 @@ export function EditQuestionForm({ questionId }: { questionId: string }) {
                                                 </FormItem>
                                             )}
                                         />
+                                        <FormField
+                                            control={form.control}
+                                            name={`choices.${index}.choiceId`}
+                                            render={({ field }) => (
+                                                <input type="hidden" {...field} />
+                                            )}
+                                        />
                                     </div>
                                     {fields.length > 2 && (
                                         <Button
@@ -170,7 +180,7 @@ export function EditQuestionForm({ questionId }: { questionId: string }) {
                             <Button
                                 type="button"
                                 variant="outline"
-                                onClick={() => append({text: "", isCorrect: false})}
+                                onClick={() => append({choiceId: "", text: "", isCorrect: false})}
                                 className="w-full"
                             >
                                 Adicionar Alternativa
