@@ -18,6 +18,7 @@ export const editQuestionRequest = async (data: EditQuestionFormData) => {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
     })
+    console.log(data)
     console.log(response.data)
     return response.data;
 }
@@ -50,11 +51,10 @@ export const fetchQuestionsPage = async (params: FetchQuestionsPageParams)
 }
 
 export const deleteQuestion = async (data: DeleteQuestionFormData): Promise<boolean> => {
-    const response = await question.delete('/delete-question', {
+    const response = await question.delete(`/delete-question/${data.questionId}`, {
         headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        data: data,
+        }
     })
     console.log(response.data)
     if (response.status === 204) {

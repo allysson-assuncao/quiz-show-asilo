@@ -67,7 +67,7 @@ const ManageQuestionTable = () => {
         // Optimistically update UI
         setLocalTableData((prev) => prev ? prev.filter(q => q.id !== id) : prev);
         console.log("Deleting question ID:", id);
-        const success = await deleteQuestion({ id });
+        const success = await deleteQuestion({ questionId: id });
         if (success) {
             queryClient.invalidateQueries(['questions']);
         } else {

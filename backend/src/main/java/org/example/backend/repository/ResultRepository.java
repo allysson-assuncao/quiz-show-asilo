@@ -20,14 +20,14 @@ public interface ResultRepository extends JpaRepository<Result, Long> {
     /*@Query("""
                 SELECT
                     new org.example.backend.dto.Quiz.QuizMetricsDTO(
-                        (SELECT u.name FROM Result r_top JOIN r_top.user u WHERE r_top.quiz.id = :quizId ORDER BY r_top.score DESC, r_top.createdAt ASC LIMIT 1),
-                        (SELECT MAX(r_max.score) FROM Result r_max WHERE r_max.quiz.id = :quizId),
+                        (SELECT u.name FROM Result r_top JOIN r_top.user u WHERE r_top.quiz.questionId = :quizId ORDER BY r_top.score DESC, r_top.createdAt ASC LIMIT 1),
+                        (SELECT MAX(r_max.score) FROM Result r_max WHERE r_max.quiz.questionId = :quizId),
                         AVG(r.score),
-                        COUNT(r.id),
-                        COUNT(DISTINCT r.user.id)
+                        COUNT(r.questionId),
+                        COUNT(DISTINCT r.user.questionId)
                     )
                 FROM Result r
-                WHERE r.quiz.id = :quizId
+                WHERE r.quiz.questionId = :quizId
             """)
     QuizMetricsDTO getQuizMetrics(@Param("quizId") UUID quizId);*/
 

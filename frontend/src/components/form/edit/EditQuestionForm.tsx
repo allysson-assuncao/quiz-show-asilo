@@ -18,7 +18,7 @@ import {EditQuestionFormData} from "@/model/FormData";
 import {useEffect, useState} from "react";
 import {fetchEditableQuestion} from "@/services/questionService";
 
-export function EditQuestionForm({ questionId }: { questionId: string }) {
+export function EditQuestionForm({questionId}: { questionId: string }) {
     const queryClient = useQueryClient();
     const [loading, setLoading] = useState(true);
     const [fetchedData, setFetchedData] = useState<EditQuestionFormData | null>(null);
@@ -40,15 +40,20 @@ export function EditQuestionForm({ questionId }: { questionId: string }) {
         if (!questionId) return;
         setLoading(true);
         setFetchedData(null);
+
         async function fetchData() {
             try {
                 const data = await fetchEditableQuestion(questionId);
                 setFetchedData(data);
-                form.reset({ ...data, questionId });
+                form.reset({...data, questionId});
+                fields.forEach((field, index) => {
+                    form.register(`choices.${index}.choiceId`);
+                });
             } finally {
                 setLoading(false);
             }
         }
+
         fetchData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [questionId]);
@@ -81,7 +86,7 @@ export function EditQuestionForm({ questionId }: { questionId: string }) {
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-[200px]">
-                <Icons.spinner className="animate-spin w-8 h-8 text-muted-foreground" />
+                <Icons.spinner className="animate-spin w-8 h-8 text-muted-foreground"/>
                 <span className="ml-2">Carregando pergunta...</span>
             </div>
         );
@@ -152,8 +157,8 @@ export function EditQuestionForm({ questionId }: { questionId: string }) {
                                         <FormField
                                             control={form.control}
                                             name={`choices.${index}.choiceId`}
-                                            render={({ field }) => (
-                                                <input type="hidden" {...field} />
+                                            render={({field}) => (
+                                                <input type="hidden" value={field.value} {...field} />
                                             )}
                                         />
                                     </div>
